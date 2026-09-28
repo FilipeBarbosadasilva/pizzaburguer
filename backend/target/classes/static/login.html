@@ -24,14 +24,15 @@
 	</main>
 	<footer class="site-footer"><a class="brand brand-footer" href="index.html"><span class="brand-mark" aria-hidden="true">P</span><span>Pizzaburguer</span></a><p>Feita com calma. Entregue com carinho.</p><div class="footer-links"><a href="cardapio.html">Cardápio</a><a href="sobre.html">Contato</a><a href="admin.html">Admin</a></div><small>© 2026 Pizzaburguer. Todos os direitos reservados.</small></footer>
 	<script>
-		const apiBase = 'http://localhost:8080/api';
+		const apiBase = '/api';
 		document.querySelectorAll('[data-show]').forEach((button) => button.addEventListener('click', () => {
 			document.querySelectorAll('.form-panel').forEach((panel) => panel.classList.add('hidden'));
 			document.querySelector(`#${button.dataset.show}`).classList.remove('hidden');
 		}));
 		document.querySelector('#register-form').addEventListener('submit', async (event) => {
 			event.preventDefault();
-			const form = new FormData(event.currentTarget);
+			const formElement = event.currentTarget;
+			const form = new FormData(formElement);
 			const payload = {
 				nome: String(form.get('name')).trim(),
 				email: String(form.get('email')).trim().toLowerCase(),
@@ -47,7 +48,7 @@
 				const result = await response.json();
 				if (!response.ok) throw new Error(result.erro || 'Erro ao cadastrar.');
 				feedback.textContent = 'Cadastro criado com sucesso! Você já pode entrar na sua conta.';
-				event.currentTarget.reset();
+				formElement.reset();
 				localStorage.setItem('pizzaburguer-session', JSON.stringify({ name: result.nome, email: result.email, tipo: result.tipo }));
 			} catch (error) {
 				feedback.textContent = error.message || 'Não foi possível cadastrar agora.';

@@ -9,7 +9,7 @@ services:
       MYSQL_DATABASE: pizzaburguer
       MYSQL_USER: pizzaburguer
       MYSQL_PASSWORD: pizzaburguer
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: 
     ports:
       - "3307:3307"
     volumes:

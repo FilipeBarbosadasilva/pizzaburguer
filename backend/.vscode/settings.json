@@ -1,32 +1,32 @@
 {
     "java.jdt.ls.java.home": "D:\\Program Files",
     "maven.executable.preferMavenWrapper": false,
-    "maven.executable.path": "C:\\Users\\filip\\.jaenvtix\\jdk-21\\mvn-custom\\bin\\jaenvtix-mvn.cmd",
+    "maven.executable.path": "D:\\apache-maven-3.9.16-bin\\apache-maven-3.9.16\\bin\\mvn.cmd",
     "java.configuration.maven.userSettings": "C:\\Users\\filip\\.m2\\settings.xml",
     "java.compile.nullAnalysis.mode": "automatic",
     "java.configuration.updateBuildConfiguration": "automatic",
     "terminal.integrated.env.windows": {
-        "JAVA_HOME": "D:\\Program Files",
-        "MAVEN_HOME": "C:\\Users\\filip\\.jaenvtix\\jdk-21\\mvn-custom",
-        "M2_HOME": "C:\\Users\\filip\\.jaenvtix\\jdk-21\\mvn-custom",
-        "Path": "D:\\Program Files\\bin;C:\\Users\\filip\\.jaenvtix\\jdk-21\\mvn-custom\\bin;${env:Path}"
+        "JAVA_HOME": "D:\\java\\openjdk-26.0.1_windows-x64_bin\\jdk-26.0.1",
+        "MAVEN_HOME": "D:\\apache-maven-3.9.16-bin\\apache-maven-3.9.16",
+        "M2_HOME": "D:\\apache-maven-3.9.16-bin\\apache-maven-3.9.16",
+        "Path": "D:\\java\\openjdk-26.0.1_windows-x64_bin\\jdk-26.0.1\\bin;D:\\apache-maven-3.9.16-bin\\apache-maven-3.9.16\\bin;${env:Path}"
     },
     "maven.terminal.customEnv": [
         {
             "environmentVariable": "JAVA_HOME",
-            "value": "D:\\Program Files"
+            "value": "D:\\java\\openjdk-26.0.1_windows-x64_bin\\jdk-26.0.1"
         },
         {
             "environmentVariable": "MAVEN_HOME",
-            "value": "C:\\Users\\filip\\.jaenvtix\\jdk-21\\mvn-custom"
+            "value": "D:\\apache-maven-3.9.16-bin\\apache-maven-3.9.16"
         },
         {
             "environmentVariable": "M2_HOME",
-            "value": "C:\\Users\\filip\\.jaenvtix\\jdk-21\\mvn-custom"
+            "value": "D:\\apache-maven-3.9.16-bin\\apache-maven-3.9.16"
         },
         {
             "environmentVariable": "PATH",
-            "value": "D:\\Program Files\\bin;C:\\Users\\filip\\.jaenvtix\\jdk-21\\mvn-custom\\bin;${env:PATH}"
+            "value": "D:\\java\\openjdk-26.0.1_windows-x64_bin\\jdk-26.0.1\\bin;D:\\apache-maven-3.9.16-bin\\apache-maven-3.9.16\\bin;${env:PATH}"
         }
     ],
     "maven.terminal.favorites": [

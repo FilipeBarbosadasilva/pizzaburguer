@@ -1,5 +1,5 @@
 INSERT INTO usuarios (nome, email, senha, tipo) VALUES
-('Administrador', 'admin@pizzaburguer.com', '$2a$10$4G4Bl1uFO6j3uFsUNVwskO86mR7hJ8zR0x9TKIwyvOYBY8A9q2Z/6', 'ADMIN'),
+('Administrador', 'admin@pizzaburguer.com', '$2a$10$Uz3eftXoFldWdEx9u7WIPeqMYfkYiga0XClhx3pD878W2vcl8aopi', 'ADMIN'),
 ('Cliente Demo', 'cliente@pizzaburguer.com', '$2a$10$4G4Bl1uFO6j3uFsUNVwskO86mR7hJ8zR0x9TKIwyvOYBY8A9q2Z/6', 'CLIENTE');
 
 INSERT INTO pizzas (nome, descricao, categoria, preco, imagem, disponivel) VALUES
