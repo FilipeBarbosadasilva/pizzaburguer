@@ -1,0 +1,42 @@
+{
+    "java.jdt.ls.java.home": "D:\\Program Files",
+    "maven.executable.preferMavenWrapper": false,
+    "maven.executable.path": "C:\\Users\\filip\\.jaenvtix\\jdk-21\\mvn-custom\\bin\\jaenvtix-mvn.cmd",
+    "java.configuration.maven.userSettings": "C:\\Users\\filip\\.m2\\settings.xml",
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "terminal.integrated.env.windows": {
+        "JAVA_HOME": "D:\\Program Files",
+        "MAVEN_HOME": "C:\\Users\\filip\\.jaenvtix\\jdk-21\\mvn-custom",
+        "M2_HOME": "C:\\Users\\filip\\.jaenvtix\\jdk-21\\mvn-custom",
+        "Path": "D:\\Program Files\\bin;C:\\Users\\filip\\.jaenvtix\\jdk-21\\mvn-custom\\bin;${env:Path}"
+    },
+    "maven.terminal.customEnv": [
+        {
+            "environmentVariable": "JAVA_HOME",
+            "value": "D:\\Program Files"
+        },
+        {
+            "environmentVariable": "MAVEN_HOME",
+            "value": "C:\\Users\\filip\\.jaenvtix\\jdk-21\\mvn-custom"
+        },
+        {
+            "environmentVariable": "M2_HOME",
+            "value": "C:\\Users\\filip\\.jaenvtix\\jdk-21\\mvn-custom"
+        },
+        {
+            "environmentVariable": "PATH",
+            "value": "D:\\Program Files\\bin;C:\\Users\\filip\\.jaenvtix\\jdk-21\\mvn-custom\\bin;${env:PATH}"
+        }
+    ],
+    "maven.terminal.favorites": [
+        {
+            "alias": "Jaenvtix: Install (skip tests)",
+            "command": "clean install -DskipTests"
+        },
+        {
+            "alias": "Jaenvtix: Spring Boot Run",
+            "command": "spring-boot:run"
+        }
+    ]
+}

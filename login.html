@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="theme-color" content="#c73523">
+	<title>Entrar ou cadastrar | Pizzaburguer</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+	<header class="site-header">
+		<a class="brand" href="index.html" aria-label="Pizzaburguer, início"><span class="brand-mark" aria-hidden="true">P</span><span>Pizzaburguer</span></a>
+		<nav class="main-nav" aria-label="Navegação principal"><a href="index.html">Início</a><a href="cardapio.html">Cardápio</a><a href="sobre.html">Sobre</a></nav>
+		<div class="header-actions"><a class="header-login" href="login.html">Entrar</a><a class="button button-small button-dark" href="pedido.html"><span aria-hidden="true">▣</span> Meu pedido <span class="cart-count" data-cart-count>0</span></a></div>
+		<button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false"><span></span><span></span></button>
+	</header>
+	<main class="account-layout">
+		<section class="form-panel" id="login-panel"><p class="eyebrow">Que bom ter você por aqui</p><h1>Entre na sua conta.</h1><p>Acompanhe seus pedidos e peça de novo sem complicação.</p><form id="login-form"><div class="form-field"><label class="field-label" for="login-email">E-mail</label><input class="text-field" id="login-email" name="email" type="email" autocomplete="email" required></div><div class="form-field"><label class="field-label" for="login-password">Senha</label><input class="text-field" id="login-password" name="password" type="password" autocomplete="current-password" required></div><button class="button button-red" type="submit">Entrar <span aria-hidden="true">→</span></button><p class="form-feedback hidden" id="login-feedback" role="status"></p></form><p class="form-switch"><button type="button" data-show="recovery-panel">Esqueci minha senha</button></p><p class="form-switch">Ainda não tem cadastro? <button type="button" data-show="register-panel">Criar conta</button></p></section>
+		<section class="form-panel hidden" id="register-panel"><p class="eyebrow">Primeiro pedido por nossa conta</p><h1>Vamos nos conhecer.</h1><p>Crie seu cadastro para agilizar seus próximos pedidos.</p><form id="register-form"><div class="form-field"><label class="field-label" for="register-name">Nome</label><input class="text-field" id="register-name" name="name" autocomplete="name" required></div><div class="form-field"><label class="field-label" for="register-email">E-mail</label><input class="text-field" id="register-email" name="email" type="email" autocomplete="email" required></div><div class="form-field"><label class="field-label" for="register-password">Senha</label><input class="text-field" id="register-password" name="password" type="password" autocomplete="new-password" minlength="6" required></div><button class="button button-red" type="submit">Criar cadastro <span aria-hidden="true">→</span></button><p class="form-feedback hidden" id="register-feedback" role="status"></p></form><p class="form-switch">Já tem cadastro? <button type="button" data-show="login-panel">Entrar</button></p></section>
+		<section class="form-panel hidden" id="recovery-panel"><p class="eyebrow">Acontece</p><h1>Recupere seu acesso.</h1><p>Informe o e-mail usado no cadastro para receber as instruções.</p><form id="recovery-form"><div class="form-field"><label class="field-label" for="recovery-email">E-mail</label><input class="text-field" id="recovery-email" name="email" type="email" autocomplete="email" required></div><button class="button button-red" type="submit">Enviar instruções <span aria-hidden="true">→</span></button><p class="form-feedback hidden" id="recovery-feedback" role="status">Se o e-mail estiver cadastrado, você receberá as instruções de recuperação.</p></form><p class="form-switch"><button type="button" data-show="login-panel">Voltar ao login</button></p></section>
+	</main>
+	<footer class="site-footer"><a class="brand brand-footer" href="index.html"><span class="brand-mark" aria-hidden="true">P</span><span>Pizzaburguer</span></a><p>Feita com calma. Entregue com carinho.</p><div class="footer-links"><a href="cardapio.html">Cardápio</a><a href="sobre.html">Contato</a><a href="admin.html">Admin</a></div><small>© 2026 Pizzaburguer. Todos os direitos reservados.</small></footer>
+	<script>
+		const apiBase = 'http://localhost:8080/api';
+		document.querySelectorAll('[data-show]').forEach((button) => button.addEventListener('click', () => {
+			document.querySelectorAll('.form-panel').forEach((panel) => panel.classList.add('hidden'));
+			document.querySelector(`#${button.dataset.show}`).classList.remove('hidden');
+		}));
+		document.querySelector('#register-form').addEventListener('submit', async (event) => {
+			event.preventDefault();
+			const form = new FormData(event.currentTarget);
+			const payload = {
+				nome: String(form.get('name')).trim(),
+				email: String(form.get('email')).trim().toLowerCase(),
+				senha: String(form.get('password'))
+			};
+			const feedback = document.querySelector('#register-feedback');
+			try {
+				const response = await fetch(`${apiBase}/cadastro`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(payload)
+				});
+				const result = await response.json();
+				if (!response.ok) throw new Error(result.erro || 'Erro ao cadastrar.');
+				feedback.textContent = 'Cadastro criado com sucesso! Você já pode entrar na sua conta.';
+				event.currentTarget.reset();
+				localStorage.setItem('pizzaburguer-session', JSON.stringify({ name: result.nome, email: result.email, tipo: result.tipo }));
+			} catch (error) {
+				feedback.textContent = error.message || 'Não foi possível cadastrar agora.';
+			}
+			feedback.classList.remove('hidden');
+		});
+		document.querySelector('#login-form').addEventListener('submit', async (event) => {
+			event.preventDefault();
+			const form = new FormData(event.currentTarget);
+			const payload = {
+				email: String(form.get('email')).trim().toLowerCase(),
+				senha: String(form.get('password'))
+			};
+			const feedback = document.querySelector('#login-feedback');
+			try {
+				const response = await fetch(`${apiBase}/login`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(payload)
+				});
+				const result = await response.json();
+				if (!response.ok) throw new Error(result.erro || 'Credenciais inválidas.');
+				feedback.textContent = `Olá, ${result.nome}! Login realizado com sucesso.`;
+				localStorage.setItem('pizzaburguer-session', JSON.stringify({ name: result.nome, email: result.email, tipo: result.tipo }));
+			} catch (error) {
+				feedback.textContent = error.message || 'E-mail ou senha inválidos.';
+			}
+			feedback.classList.remove('hidden');
+		});
+		document.querySelector('#recovery-form').addEventListener('submit', (event) => {
+			event.preventDefault();
+			document.querySelector('#recovery-feedback').classList.remove('hidden');
+		});
+		const menuToggle = document.querySelector('.menu-toggle');
+		menuToggle.addEventListener('click', () => {
+			const expanded = menuToggle.getAttribute('aria-expanded') === 'true';
+			menuToggle.setAttribute('aria-expanded', String(!expanded));
+			document.querySelector('.main-nav').classList.toggle('nav-open', !expanded);
+		});
+		const cart = JSON.parse(localStorage.getItem('pizzaburguer-cart') || '[]');
+		document.querySelectorAll('[data-cart-count]').forEach((count) => count.textContent = cart.reduce((sum, item) => sum + item.quantity, 0));
+	</script>
+</body>
+</html>

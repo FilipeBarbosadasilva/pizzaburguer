@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="theme-color" content="#c73523">
+	<meta name="description" content="Pizzas artesanais, ingredientes frescos e entrega quentinha. Peça na Pizzaburguer.">
+	<title>Pizzaburguer | Pizza boa, do seu jeito</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+	<header class="site-header">
+		<a class="brand" href="index.html" aria-label="Pizzaburguer, início"><span class="brand-mark" aria-hidden="true">P</span><span>Pizzaburguer</span></a>
+		<nav class="main-nav" aria-label="Navegação principal">
+			<a class="active" href="index.html">Início</a><a href="cardapio.html">Cardápio</a><a href="sobre.html">Sobre</a>
+		</nav>
+		<div class="header-actions"><a class="header-login" href="login.html">Entrar</a><a class="button button-small button-dark" href="pedido.html"><span aria-hidden="true">▣</span> Meu pedido <span class="cart-count" data-cart-count>0</span></a></div>
+		<button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false"><span></span><span></span></button>
+	</header>
+
+	<main>
+		<section class="hero">
+			<img class="hero-image" src="https://images.unsplash.com/photo-1579751626657-72bc17010498?auto=format&fit=crop&w=2000&q=88" alt="Pizza artesanal recém-saída do forno, coberta com queijo e manjericão">
+			<div class="hero-shade"></div>
+			<div class="hero-content">
+				<p class="eyebrow eyebrow-light"><span class="eyebrow-dot"></span> Feita na hora. Feita pra você.</p>
+				<h1>Pizzaburguer</h1>
+				<p class="hero-copy">Massa artesanal, ingredientes de verdade e aquele primeiro pedaço que pede outro.</p>
+				<div class="hero-actions"><a class="button button-yellow" href="cardapio.html">Ver cardápio <span aria-hidden="true">→</span></a><a class="button button-outline" href="pedido.html">Fazer pedido</a></div>
+				<div class="hero-note"><span class="hero-note-icon" aria-hidden="true">⌁</span><span><strong>Quentinha até você</strong><br>Entrega rápida todos os dias</span></div>
+			</div>
+			<div class="hero-stamp" aria-label="Massa artesanal"><span>DESDE</span><strong>2018</strong><span>COM AMOR</span></div>
+			<a class="hero-scroll" href="#destaques">Role para descobrir <span aria-hidden="true">↓</span></a>
+		</section>
+
+		<section class="promise-strip" aria-label="Diferenciais">
+			<div><span class="promise-icon" aria-hidden="true">✳</span><p><strong>Ingredientes frescos</strong><br>Selecionados todo dia</p></div>
+			<div><span class="promise-icon" aria-hidden="true">◷</span><p><strong>Entrega ligeira</strong><br>Do forno à sua porta</p></div>
+			<div><span class="promise-icon" aria-hidden="true">♡</span><p><strong>Massa artesanal</strong><br>Fermentação lenta, sabor de sobra</p></div>
+		</section>
+
+		<section class="section specials-section" id="destaques">
+			<div class="section-heading"><div><p class="eyebrow">Uma boa ideia para hoje</p><h2>Favoritas da casa<span class="tomato-dot">.</span></h2></div><a class="text-link" href="cardapio.html">Ver o cardápio completo <span aria-hidden="true">→</span></a></div>
+			<div class="featured-grid">
+				<article class="featured-card featured-card-main"><img src="https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?auto=format&fit=crop&w=1200&q=85" alt="Pizza de calabresa com cebola roxa e ervas"><div class="featured-overlay"><span class="tag tag-yellow">A queridinha</span><h3>Calabresa da casa</h3><p>Calabresa artesanal, cebola roxa e orégano fresco.</p><a href="cardapio.html" class="round-arrow" aria-label="Ver pizza Calabresa da casa">↗</a></div></article>
+				<article class="featured-card featured-card-secondary"><img src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=1000&q=85" alt="Pizza de queijo com folhas frescas de manjericão"><div class="featured-overlay"><span class="tag tag-light">Clássico eterno</span><h3>Margherita</h3><p>Tomate, muçarela e manjericão.</p><a href="cardapio.html" class="round-arrow" aria-label="Ver pizza Margherita">↗</a></div></article>
+			</div>
+		</section>
+
+		<section class="order-banner"><div class="order-banner-copy"><p class="eyebrow eyebrow-light">Sua próxima pizza está a um clique</p><h2>Hoje combina<br>com pizza.</h2><a class="button button-yellow" href="cardapio.html">Escolher minha pizza <span aria-hidden="true">→</span></a></div><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1000&q=85" alt="Pizza inteira servida sobre uma tábua de madeira"></section>
+	</main>
+
+	<footer class="site-footer"><a class="brand brand-footer" href="index.html"><span class="brand-mark" aria-hidden="true">P</span><span>Pizzaburguer</span></a><p>Feita com calma. Entregue com carinho.</p><div class="footer-links"><a href="cardapio.html">Cardápio</a><a href="pedido.html">Meu pedido</a><a href="sobre.html">Contato</a><a href="admin.html">Admin</a></div><small>© 2026 Pizzaburguer. Todos os direitos reservados.</small></footer>
+
+	<script>
+		const menuToggle = document.querySelector('.menu-toggle');
+		menuToggle.addEventListener('click', () => {
+			const expanded = menuToggle.getAttribute('aria-expanded') === 'true';
+			menuToggle.setAttribute('aria-expanded', String(!expanded));
+			document.querySelector('.main-nav').classList.toggle('nav-open', !expanded);
+		});
+		const cart = JSON.parse(localStorage.getItem('pizzaburguer-cart') || '[]');
+		document.querySelectorAll('[data-cart-count]').forEach((count) => count.textContent = cart.reduce((sum, item) => sum + item.quantity, 0));
+	</script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="theme-color" content="#c73523">
+	<title>Cardápio | Pizzaburguer</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+	<header class="site-header">
+		<a class="brand" href="index.html" aria-label="Pizzaburguer, início"><span class="brand-mark" aria-hidden="true">P</span><span>Pizzaburguer</span></a>
+		<nav class="main-nav" aria-label="Navegação principal"><a href="index.html">Início</a><a class="active" href="cardapio.html">Cardápio</a><a href="sobre.html">Sobre</a></nav>
+		<div class="header-actions"><a class="header-login" href="login.html">Entrar</a><a class="button button-small button-dark" href="pedido.html"><span aria-hidden="true">▣</span> Meu pedido <span class="cart-count" data-cart-count>0</span></a></div>
+		<button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false"><span></span><span></span></button>
+	</header>
+	<main>
+		<section class="page-intro"><div class="page-heading"><p class="eyebrow">Massa fresca, bons ingredientes</p><h1>O cardápio que dá vontade.</h1><p>Clássicos da casa, combinações caprichadas e um docinho para fechar bem.</p></div></section>
+		<div class="menu-page-content">
+			<nav class="menu-shortcuts" aria-label="Categorias do cardápio"><a href="#tradicionais">Tradicionais</a><a href="#especiais">Especiais</a><a href="#doces">Doces</a><a href="#bebidas">Bebidas</a></nav>
+			<section class="menu-category" id="tradicionais"><div class="category-heading"><h2>Tradicionais</h2><span>Os sabores que sempre voltam</span></div><div class="menu-grid" data-menu-category="tradicionais"></div></section>
+			<section class="menu-category" id="especiais"><div class="category-heading"><h2>Especiais</h2><span>Receitas da nossa cozinha</span></div><div class="menu-grid" data-menu-category="especiais"></div></section>
+			<section class="menu-category" id="doces"><div class="category-heading"><h2>Doces</h2><span>Um final feliz</span></div><div class="menu-grid" data-menu-category="doces"></div></section>
+			<section class="menu-category" id="bebidas"><div class="category-heading"><h2>Bebidas</h2><span>Para acompanhar cada pedaço</span></div><div class="menu-grid" data-menu-category="bebidas"></div></section>
+		</div>
+	</main>
+	<footer class="site-footer"><a class="brand brand-footer" href="index.html"><span class="brand-mark" aria-hidden="true">P</span><span>Pizzaburguer</span></a><p>Feita com calma. Entregue com carinho.</p><div class="footer-links"><a href="pedido.html">Meu pedido</a><a href="sobre.html">Contato</a><a href="admin.html">Admin</a></div><small>© 2026 Pizzaburguer. Todos os direitos reservados.</small></footer>
+	<script>
+		const products = [
+			{ id: 'calabresa', category: 'tradicionais', name: 'Calabresa da casa', description: 'Calabresa artesanal, cebola roxa e orégano fresco.', price: 42.9, image: 'photo-1571407970349-bc81e7e96d47' },
+			{ id: 'mussarela', category: 'tradicionais', name: 'Muçarela', description: 'Muçarela derretida, molho da casa e manjericão.', price: 39.9, image: 'photo-1574071318508-1cdbab80d002' },
+			{ id: 'portuguesa', category: 'tradicionais', name: 'Portuguesa', description: 'Presunto, ovo, cebola, azeitona e muçarela.', price: 45.9, image: 'photo-1579751626657-72bc17010498' },
+			{ id: 'frango-catupiry', category: 'especiais', name: 'Frango com Catupiry', description: 'Frango temperado, Catupiry cremoso e milho.', price: 48.9, image: 'photo-1593560708920-61dd98c46a4e' },
+			{ id: 'quatro-queijos', category: 'especiais', name: 'Quatro queijos', description: 'Muçarela, gorgonzola, parmesão e Catupiry.', price: 49.9, image: 'photo-1513104890138-7c749659a591' },
+			{ id: 'vegetariana', category: 'especiais', name: 'Da horta', description: 'Abobrinha, tomate, cogumelos e rúcula fresca.', price: 46.9, image: 'photo-1571407970349-bc81e7e96d47' },
+			{ id: 'chocolate', category: 'doces', name: 'Chocolate', description: 'Chocolate cremoso e raspas de chocolate ao leite.', price: 36.9, image: 'photo-1579751626657-72bc17010498' },
+			{ id: 'banana-canela', category: 'doces', name: 'Banana com canela', description: 'Banana, açúcar, canela e um toque de doce de leite.', price: 34.9, image: 'photo-1513104890138-7c749659a591' },
+			{ id: 'refrigerante', category: 'bebidas', name: 'Refrigerante 2 L', description: 'Escolha entre cola, guaraná ou laranja.', price: 13.9, image: 'photo-1622483767028-3f66f32aef97' },
+			{ id: 'suco', category: 'bebidas', name: 'Suco natural 500 ml', description: 'Laranja ou limonada, feito na hora.', price: 10.9, image: 'photo-1600271886742-f049cd451bba' },
+			{ id: 'agua', category: 'bebidas', name: 'Água mineral 500 ml', description: 'Com ou sem gás, sempre gelada.', price: 5.9, image: 'photo-1616118132534-381148898bb4' },
+			{ id: 'cerveja', category: 'bebidas', name: 'Cerveja long neck', description: 'Cerveja lager 330 ml. Venda proibida para menores.', price: 12.9, image: 'photo-1608270586620-248524c67de9' }
+		];
+		const formatPrice = (value) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+		const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+		const customProducts = JSON.parse(localStorage.getItem('pizzaburguer-menu') || '[]');
+		const overrides = JSON.parse(localStorage.getItem('pizzaburguer-menu-overrides') || '{}');
+		const removed = JSON.parse(localStorage.getItem('pizzaburguer-menu-removed') || '[]');
+		const fullMenu = [...products.filter((product) => !removed.includes(product.id)).map((product) => ({ ...product, ...overrides[product.id] })), ...customProducts];
+		document.querySelectorAll('[data-menu-category]').forEach((grid) => {
+			const category = grid.dataset.menuCategory;
+			fullMenu.filter((product) => product.category === category).forEach((product) => {
+				const card = document.createElement('article');
+				card.className = 'menu-card';
+				const imageUrl = product.image.startsWith('http') ? product.image : `https://images.unsplash.com/${product.image}?auto=format&fit=crop&w=800&q=82`;
+				card.innerHTML = `<img class="menu-card-image ${category === 'bebidas' ? 'menu-drink-image' : ''}" src="${escapeHtml(imageUrl)}" alt="${escapeHtml(product.name)}" loading="lazy"><div class="menu-card-body"><div class="menu-card-top"><h3>${escapeHtml(product.name)}</h3><span class="menu-card-price">${formatPrice(Number(product.price))}</span></div><p>${escapeHtml(product.description)}</p><button class="button button-red" type="button" data-add="${escapeHtml(product.id)}">Adicionar ao pedido <span aria-hidden="true">+</span></button></div>`;
+				grid.append(card);
+			});
+		});
+		document.addEventListener('click', (event) => {
+			const button = event.target.closest('[data-add]');
+			if (!button) return;
+			const product = fullMenu.find((item) => item.id === button.dataset.add);
+			const cart = JSON.parse(localStorage.getItem('pizzaburguer-cart') || '[]');
+			const existing = cart.find((item) => item.id === product.id);
+			if (existing) existing.quantity += 1;
+			else cart.push({ ...product, quantity: 1 });
+			localStorage.setItem('pizzaburguer-cart', JSON.stringify(cart));
+			document.querySelectorAll('[data-cart-count]').forEach((count) => count.textContent = cart.reduce((sum, item) => sum + item.quantity, 0));
+			button.innerHTML = 'Adicionado <span aria-hidden="true">✓</span>';
+			window.setTimeout(() => { button.innerHTML = 'Adicionar ao pedido <span aria-hidden="true">+</span>'; }, 1100);
+		});
+		const menuToggle = document.querySelector('.menu-toggle');
+		menuToggle.addEventListener('click', () => {
+			const expanded = menuToggle.getAttribute('aria-expanded') === 'true';
+			menuToggle.setAttribute('aria-expanded', String(!expanded));
+			document.querySelector('.main-nav').classList.toggle('nav-open', !expanded);
+		});
+		const cart = JSON.parse(localStorage.getItem('pizzaburguer-cart') || '[]');
+		document.querySelectorAll('[data-cart-count]').forEach((count) => count.textContent = cart.reduce((sum, item) => sum + item.quantity, 0));
+	</script>
+</body>
+</html>

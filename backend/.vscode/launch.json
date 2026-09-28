@@ -1,0 +1,12 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "request": "launch",
+            "name": "Jaenvtix: Spring Boot (pizzaburguer-backend)",
+            "mainClass": "com.pizzaburguer.PizzaburguerBackendApplication",
+            "projectName": "pizzaburguer-backend"
+        }
+    ]
+}

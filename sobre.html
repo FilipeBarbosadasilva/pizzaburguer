@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#c73523">
+  <title>Sobre e contato | Pizzaburguer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="Pizzaburguer, início"><span class="brand-mark" aria-hidden="true">P</span><span>Pizzaburguer</span></a>
+    <nav class="main-nav" aria-label="Navegação principal"><a href="index.html">Início</a><a href="cardapio.html">Cardápio</a><a class="active" href="sobre.html">Sobre</a></nav>
+    <div class="header-actions"><a class="header-login" href="login.html">Entrar</a><a class="button button-small button-dark" href="pedido.html"><span aria-hidden="true">▣</span> Meu pedido <span class="cart-count" data-cart-count>0</span></a></div>
+    <button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false"><span></span><span></span></button>
+  </header>
+  <main>
+    <section class="page-intro"><div class="page-heading"><p class="eyebrow">Nossa casa, sua mesa</p><h1>Pizza boa aproxima.</h1><p>Uma cozinha de bairro, guiada por bons ingredientes e pelo prazer de dividir a mesa.</p></div></section>
+    <section class="story-layout"><img class="story-image" src="https://images.unsplash.com/photo-1579751626657-72bc17010498?auto=format&fit=crop&w=1000&q=85" alt="Pizza artesanal preparada com ingredientes frescos"><div class="story-copy"><p class="eyebrow">Desde 2018</p><h1>Começou com uma massa e uma mesa cheia.</h1><p>A Pizzaburguer nasceu da vontade de fazer pizza sem pressa: massa de fermentação lenta, ingredientes escolhidos com cuidado e receitas que dão vontade de chamar mais alguém para a mesa.</p><p>Hoje, seguimos fazendo cada pizza na hora e recebendo cada pedido com o mesmo carinho do primeiro dia. A nossa melhor receita continua sendo compartilhar.</p><a class="button button-red" href="cardapio.html">Conheça o cardápio <span aria-hidden="true">→</span></a></div></section>
+    <section class="contact-section"><div class="contact-inner"><p class="eyebrow">Estamos por perto</p><h2>Visite ou mande uma mensagem.</h2><div class="contact-grid"><div class="contact-info"><p><strong>Endereço</strong>Rua das Palmeiras, 245<br>Pinheiros, São Paulo - SP</p><p><strong>Telefone</strong><a href="tel:+551134567890">(11) 3456-7890</a></p><p><strong>Funcionamento</strong>Ter a dom, 18h às 23h</p><div class="social-links"><a href="https://instagram.com/" target="_blank" rel="noreferrer">Instagram ↗</a><a href="https://facebook.com/" target="_blank" rel="noreferrer">Facebook ↗</a></div></div><iframe class="contact-map" title="Mapa da região da pizzaria" src="https://maps.google.com/maps?q=Pinheiros%2C%20S%C3%A3o%20Paulo&t=&z=13&ie=UTF8&iwloc=&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe><form class="contact-form" id="contact-form"><div class="form-field"><label class="field-label" for="contact-name">Seu nome</label><input class="text-field" id="contact-name" name="name" required></div><div class="form-field"><label class="field-label" for="contact-email">E-mail</label><input class="text-field" id="contact-email" name="email" type="email" required></div><div class="form-field"><label class="field-label" for="contact-message">Como podemos ajudar?</label><textarea class="text-area" id="contact-message" name="message" required></textarea></div><button class="button button-red" type="submit">Enviar mensagem <span aria-hidden="true">→</span></button><p class="form-feedback hidden" id="contact-feedback" role="status">Mensagem registrada. Obrigado por escrever!</p></form></div></div></section>
+  </main>
+  <footer class="site-footer"><a class="brand brand-footer" href="index.html"><span class="brand-mark" aria-hidden="true">P</span><span>Pizzaburguer</span></a><p>Feita com calma. Entregue com carinho.</p><div class="footer-links"><a href="cardapio.html">Cardápio</a><a href="pedido.html">Meu pedido</a><a href="admin.html">Admin</a></div><small>© 2026 Pizzaburguer. Todos os direitos reservados.</small></footer>
+  <script>
+    document.querySelector('#contact-form').addEventListener('submit', (event) => {
+      event.preventDefault();
+      document.querySelector('#contact-feedback').classList.remove('hidden');
+      event.currentTarget.reset();
+    });
+    const menuToggle = document.querySelector('.menu-toggle');
+    menuToggle.addEventListener('click', () => {
+      const expanded = menuToggle.getAttribute('aria-expanded') === 'true';
+      menuToggle.setAttribute('aria-expanded', String(!expanded));
+      document.querySelector('.main-nav').classList.toggle('nav-open', !expanded);
+    });
+    const cart = JSON.parse(localStorage.getItem('pizzaburguer-cart') || '[]');
+    document.querySelectorAll('[data-cart-count]').forEach((count) => count.textContent = cart.reduce((sum, item) => sum + item.quantity, 0));
+  </script>
+</body>
+</html>

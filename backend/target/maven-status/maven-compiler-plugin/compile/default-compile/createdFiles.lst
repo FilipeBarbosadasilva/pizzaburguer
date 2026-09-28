@@ -1,0 +1,14 @@
+com\pizzaburguer\service\CardapioService.class
+com\pizzaburguer\repository\PizzaRepository.class
+com\pizzaburguer\model\Pizza.class
+com\pizzaburguer\model\Usuario.class
+com\pizzaburguer\repository\BebidaRepository.class
+com\pizzaburguer\PizzaburguerBackendApplication.class
+com\pizzaburguer\repository\UsuarioRepository.class
+com\pizzaburguer\config\SecurityConfig.class
+com\pizzaburguer\service\UsuarioService.class
+com\pizzaburguer\controller\AuthController.class
+com\pizzaburguer\model\Usuario$TipoUsuario.class
+com\pizzaburguer\controller\PedidoController.class
+com\pizzaburguer\model\Bebida.class
+com\pizzaburguer\controller\CardapioController.class

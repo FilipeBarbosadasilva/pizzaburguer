@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="theme-color" content="#c73523">
+	<title>Seu pedido | Pizzaburguer</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+	<header class="site-header">
+		<a class="brand" href="index.html" aria-label="Pizzaburguer, início"><span class="brand-mark" aria-hidden="true">P</span><span>Pizzaburguer</span></a>
+		<nav class="main-nav" aria-label="Navegação principal"><a href="index.html">Início</a><a href="cardapio.html">Cardápio</a><a href="sobre.html">Sobre</a></nav>
+		<div class="header-actions"><a class="header-login" href="login.html">Entrar</a><a class="button button-small button-dark" href="pedido.html"><span aria-hidden="true">▣</span> Meu pedido <span class="cart-count" data-cart-count>0</span></a></div>
+		<button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false"><span></span><span></span></button>
+	</header>
+	<main>
+		<section class="page-intro"><div class="page-heading"><p class="eyebrow">Quase saindo do forno</p><h1>Seu pedido.</h1><p>Confira os itens, escolha como receber e finalize do seu jeito.</p></div></section>
+		<form class="checkout-layout" id="order-form">
+			<div class="checkout-main">
+				<section class="checkout-block"><h2>Itens escolhidos</h2><div class="cart-list" id="cart-list" aria-live="polite"></div><a class="text-link" href="cardapio.html">+ Adicionar mais itens ao pedido</a></section>
+				<section class="checkout-block"><h2>Seus dados</h2><div class="form-field"><label class="field-label" for="customer-name">Nome</label><input class="text-field" id="customer-name" name="name" autocomplete="name" required></div><div class="form-field"><label class="field-label" for="customer-phone">Telefone</label><input class="text-field" id="customer-phone" name="phone" type="tel" autocomplete="tel" required></div><div class="form-field" id="address-field"><label class="field-label" for="customer-address">Endereço para entrega</label><input class="text-field" id="customer-address" name="address" autocomplete="street-address" placeholder="Rua, número, bairro e complemento"></div></section>
+				<section class="checkout-block"><h2>Observações</h2><label class="field-label" for="order-note">Algum detalhe para a cozinha?</label><textarea class="text-area" id="order-note" name="notes" placeholder="Ex.: sem cebola, borda recheada..."></textarea></section>
+				<section class="checkout-block"><h2>Como prefere receber?</h2><div class="choice-grid">
+					<div class="choice-card"><input id="delivery" name="fulfillment" type="radio" value="Entrega" checked><label for="delivery"><span class="choice-icon" aria-hidden="true">⌂</span>Entrega</label></div>
+					<div class="choice-card"><input id="pickup" name="fulfillment" type="radio" value="Retirada"><label for="pickup"><span class="choice-icon" aria-hidden="true">↗</span>Retirada no balcão</label></div>
+				</div></section>
+				<section class="checkout-block"><h2>Forma de pagamento</h2><div class="choice-grid">
+					<div class="choice-card"><input id="pix" name="payment" type="radio" value="Pix" required><label for="pix"><span class="choice-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><path d="m8.7 3.3 3.3 3.3 3.3-3.3a4 4 0 0 1 5.7 5.7l-3.3 3.3 3.3 3.3a4 4 0 0 1-5.7 5.7L12 17.9l-3.3 3.3A4 4 0 0 1 3 15.5l3.3-3.3L3 8.9a4 4 0 0 1 5.7-5.6Zm3.3 5.4-4 4 4 4 4-4-4-4Zm-5.4-3.3a1.6 1.6 0 0 0-2.3 2.3l3.3 3.3 2.4-2.4-3.4-3.2Zm10.8 0L14 8.8l2.4 2.4 3.3-3.3a1.6 1.6 0 1 0-2.3-2.3Zm-10 9.3-3.1 3.1a1.6 1.6 0 1 0 2.3 2.3l3.1-3.1-2.3-2.3Zm9.2 0-2.3 2.3 3.1 3.1a1.6 1.6 0 1 0 2.3-2.3l-3.1-3.1Z"/></svg></span>Pix</label></div>
+					<div class="choice-card"><input id="credit" name="payment" type="radio" value="Cartão de crédito"><label for="credit"><span class="choice-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/></svg></span>Cartão de crédito</label></div>
+					<div class="choice-card"><input id="debit" name="payment" type="radio" value="Cartão de débito"><label for="debit"><span class="choice-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18m-8 4 2 2 4-4"/></svg></span>Cartão de débito</label></div>
+					<div class="choice-card"><input id="cash" name="payment" type="radio" value="Dinheiro"><label for="cash"><span class="choice-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="6" width="19" height="13" rx="1.5"/><circle cx="12" cy="12.5" r="3"/><path d="M5 9v7m14-7v7"/></svg></span>Dinheiro</label></div>
+				</div></section>
+			</div>
+			<aside class="checkout-side"><h2>Resumo</h2><div class="summary-line"><span>Subtotal</span><strong id="subtotal">R$ 0,00</strong></div><div class="summary-line"><span>Entrega</span><strong id="delivery-fee">R$ 5,00</strong></div><div class="summary-line summary-total"><span>Total</span><strong id="total">R$ 5,00</strong></div><button class="button button-red" id="finish-order" type="submit">Finalizar pedido <span aria-hidden="true">→</span></button><p class="checkout-note">A confirmação do pedido aparece aqui.</p><div class="success-message hidden" id="order-success" role="status"></div></aside>
+		</form>
+	</main>
+	<footer class="site-footer"><a class="brand brand-footer" href="index.html"><span class="brand-mark" aria-hidden="true">P</span><span>Pizzaburguer</span></a><p>Feita com calma. Entregue com carinho.</p><div class="footer-links"><a href="cardapio.html">Cardápio</a><a href="sobre.html">Contato</a><a href="admin.html">Admin</a></div><small>© 2026 Pizzaburguer. Todos os direitos reservados.</small></footer>
+	<script>
+		const money = (value) => Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+		let cart = JSON.parse(localStorage.getItem('pizzaburguer-cart') || '[]');
+		const cartList = document.querySelector('#cart-list');
+		const deliveryFee = () => document.querySelector('#delivery').checked ? 5 : 0;
+		const totalCount = () => cart.reduce((sum, item) => sum + item.quantity, 0);
+		const renderCart = () => {
+			cartList.replaceChildren();
+			if (cart.length === 0) {
+				const empty = document.createElement('div');
+				empty.className = 'empty-cart';
+				empty.innerHTML = 'Seu pedido ainda está vazio.<br><a class="button button-dark button-small" href="cardapio.html">Explorar o cardápio</a>';
+				cartList.append(empty);
+			}
+			cart.forEach((item) => {
+				const row = document.createElement('article');
+				row.className = 'cart-row';
+				const image = item.image.startsWith('http') ? item.image : `https://images.unsplash.com/${item.image}?auto=format&fit=crop&w=200&q=75`;
+				const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+				row.innerHTML = `<img src="${escapeHtml(image)}" alt=""><div><h3>${escapeHtml(item.name)}</h3><p>${money(item.price)} cada</p><div class="cart-controls"><button class="qty-button" type="button" data-quantity="-1" data-id="${escapeHtml(item.id)}" aria-label="Remover uma unidade de ${escapeHtml(item.name)}">−</button><span>${item.quantity}</span><button class="qty-button" type="button" data-quantity="1" data-id="${escapeHtml(item.id)}" aria-label="Adicionar uma unidade de ${escapeHtml(item.name)}">+</button><button class="remove-button" type="button" data-remove="${escapeHtml(item.id)}">Remover</button></div></div><span class="cart-row-price">${money(item.price * item.quantity)}</span>`;
+				cartList.append(row);
+			});
+			const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+			document.querySelector('#subtotal').textContent = money(subtotal);
+			const fee = cart.length ? deliveryFee() : 0;
+			document.querySelector('#delivery-fee').textContent = money(fee);
+			document.querySelector('#total').textContent = money(subtotal + fee);
+			document.querySelectorAll('[data-cart-count]').forEach((count) => count.textContent = totalCount());
+			localStorage.setItem('pizzaburguer-cart', JSON.stringify(cart));
+		};
+		cartList.addEventListener('click', (event) => {
+			const quantityButton = event.target.closest('[data-quantity]');
+			const removeButton = event.target.closest('[data-remove]');
+			if (quantityButton) {
+				const item = cart.find((entry) => entry.id === quantityButton.dataset.id);
+				item.quantity += Number(quantityButton.dataset.quantity);
+				if (item.quantity <= 0) cart = cart.filter((entry) => entry !== item);
+			}
+			if (removeButton) cart = cart.filter((entry) => entry.id !== removeButton.dataset.remove);
+			renderCart();
+		});
+		document.querySelectorAll('[name="fulfillment"]').forEach((radio) => radio.addEventListener('change', () => {
+			const isDelivery = deliveryFee() > 0;
+			document.querySelector('#address-field').classList.toggle('hidden', !isDelivery);
+			document.querySelector('#customer-address').required = isDelivery;
+			renderCart();
+		}));
+		document.querySelector('#customer-address').required = deliveryFee() > 0;
+		document.querySelector('#order-form').addEventListener('submit', (event) => {
+			event.preventDefault();
+			if (!cart.length) { document.querySelector('#order-success').textContent = 'Adicione pelo menos um item antes de finalizar.'; document.querySelector('#order-success').classList.remove('hidden'); return; }
+			const form = new FormData(event.currentTarget);
+			const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+			const orders = JSON.parse(localStorage.getItem('pizzaburguer-orders') || '[]');
+			const order = { id: Date.now(), name: form.get('name'), phone: form.get('phone'), address: form.get('address'), fulfillment: form.get('fulfillment'), payment: form.get('payment'), notes: form.get('notes'), items: cart, total: subtotal + deliveryFee(), status: 'Pendente', createdAt: new Date().toISOString() };
+			orders.unshift(order);
+			localStorage.setItem('pizzaburguer-orders', JSON.stringify(orders));
+			cart = [];
+			localStorage.setItem('pizzaburguer-cart', '[]');
+			renderCart();
+			const success = document.querySelector('#order-success');
+			success.textContent = `Pedido #${String(order.id).slice(-6)} recebido. Obrigado, ${order.name}!`;
+			success.classList.remove('hidden');
+			document.querySelector('#finish-order').disabled = true;
+		});
+		const menuToggle = document.querySelector('.menu-toggle');
+		menuToggle.addEventListener('click', () => {
+			const expanded = menuToggle.getAttribute('aria-expanded') === 'true';
+			menuToggle.setAttribute('aria-expanded', String(!expanded));
+			document.querySelector('.main-nav').classList.toggle('nav-open', !expanded);
+		});
+		renderCart();
+	</script>
+</body>
+</html>
