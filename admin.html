@@ -9,38 +9,22 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="css/style.css">
+	<script src="javascript/sessao.js" defer></script>
 	<script src="javascript/admin.js" defer></script>
 </head>
 <body class="admin-body">
 	<header class="admin-header">
 		<a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">P</span><span>Pizzaburguer</span></a>
 		<span class="admin-label">Painel administrativo</span>
-		<button class="admin-logout hidden" id="admin-logout" type="button">Sair do painel</button>
+		<button class="admin-logout hidden" id="admin-logout" data-session-logout type="button">Sair</button>
 	</header>
 
 	<main class="admin-main">
-		<section class="admin-login" id="admin-login">
-			<p class="eyebrow">Acesso restrito</p>
-			<h1>Área administrativa.</h1>
-			<p>Entre para gerenciar o movimento da casa.</p>
-			<form id="admin-login-form">
-				<div class="form-field">
-					<label class="field-label" for="admin-email">E-mail do administrador</label>
-					<input class="text-field" id="admin-email" name="email" type="email" autocomplete="email" placeholder="admin@pizzaburguer.com" required>
-				</div>
-				<div class="form-field">
-					<label class="field-label" for="admin-password">Senha de administrador</label>
-					<input class="text-field" id="admin-password" name="password" type="password" autocomplete="current-password" required>
-				</div>
-				<button class="button button-red" type="submit">Entrar no painel</button>
-				<p class="form-feedback hidden" id="admin-login-feedback" role="alert"></p>
-			</form>
-			<p class="admin-hint">Acesso de demonstração: admin@pizzaburguer.com / admin123</p>
-		</section>
-
 		<section class="hidden" id="admin-dashboard">
 			<h1>Visão geral</h1>
 			<p class="admin-lead">Acompanhe os pedidos, o cardápio e as vendas da casa.</p>
+			<p class="form-feedback hidden" id="admin-data-error" role="alert"></p>
+			<button class="button button-dark button-small" id="refresh-dashboard" type="button">Atualizar pedidos e clientes</button>
 			<div class="admin-stats">
 				<article class="stat-card"><span>Pedidos hoje</span><strong id="stat-orders">0</strong></article>
 				<article class="stat-card"><span>Vendas hoje</span><strong id="stat-day">R$ 0,00</strong></article>
@@ -68,12 +52,12 @@
 
 				<section class="admin-panel">
 					<h2>Pedidos</h2>
-					<div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Pedido</th><th>Cliente</th><th>Total</th><th>Status</th></tr></thead><tbody id="orders-table"></tbody></table></div>
+					<div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Pedido</th><th>Cliente</th><th>Resumo</th><th>WhatsApp</th><th>Total</th><th>Status</th></tr></thead><tbody id="orders-table"></tbody></table></div>
 				</section>
 
 				<section class="admin-panel">
 					<h2>Clientes cadastrados</h2>
-					<div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Nome</th><th>E-mail</th></tr></thead><tbody id="customers-table"></tbody></table></div>
+					<div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Nome</th><th>E-mail</th><th>WhatsApp</th></tr></thead><tbody id="customers-table"></tbody></table></div>
 				</section>
 			</div>
 		</section>

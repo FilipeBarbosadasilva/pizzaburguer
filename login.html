@@ -9,6 +9,7 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="css/style.css">
+	<script src="javascript/sessao.js" defer></script>
 </head>
 <body>
 	<header class="site-header">
@@ -19,15 +20,19 @@
 	</header>
 	<main class="account-layout">
 		<section class="form-panel" id="login-panel"><p class="eyebrow">Que bom ter você por aqui</p><h1>Entre na sua conta.</h1><p>Acompanhe seus pedidos e peça de novo sem complicação.</p><form id="login-form"><div class="form-field"><label class="field-label" for="login-email">E-mail</label><input class="text-field" id="login-email" name="email" type="email" autocomplete="email" required></div><div class="form-field"><label class="field-label" for="login-password">Senha</label><input class="text-field" id="login-password" name="password" type="password" autocomplete="current-password" required></div><button class="button button-red" type="submit">Entrar <span aria-hidden="true">→</span></button><p class="form-feedback hidden" id="login-feedback" role="status"></p></form><p class="form-switch"><button type="button" data-show="recovery-panel">Esqueci minha senha</button></p><p class="form-switch">Ainda não tem cadastro? <button type="button" data-show="register-panel">Criar conta</button></p></section>
-		<section class="form-panel hidden" id="register-panel"><p class="eyebrow">Primeiro pedido por nossa conta</p><h1>Vamos nos conhecer.</h1><p>Crie seu cadastro para agilizar seus próximos pedidos.</p><form id="register-form"><div class="form-field"><label class="field-label" for="register-name">Nome</label><input class="text-field" id="register-name" name="name" autocomplete="name" required></div><div class="form-field"><label class="field-label" for="register-email">E-mail</label><input class="text-field" id="register-email" name="email" type="email" autocomplete="email" required></div><div class="form-field"><label class="field-label" for="register-password">Senha</label><input class="text-field" id="register-password" name="password" type="password" autocomplete="new-password" minlength="6" required></div><button class="button button-red" type="submit">Criar cadastro <span aria-hidden="true">→</span></button><p class="form-feedback hidden" id="register-feedback" role="status"></p></form><p class="form-switch">Já tem cadastro? <button type="button" data-show="login-panel">Entrar</button></p></section>
-		<section class="form-panel hidden" id="recovery-panel"><p class="eyebrow">Acontece</p><h1>Recupere seu acesso.</h1><p>Informe o e-mail usado no cadastro para receber as instruções.</p><form id="recovery-form"><div class="form-field"><label class="field-label" for="recovery-email">E-mail</label><input class="text-field" id="recovery-email" name="email" type="email" autocomplete="email" required></div><button class="button button-red" type="submit">Enviar instruções <span aria-hidden="true">→</span></button><p class="form-feedback hidden" id="recovery-feedback" role="status">Se o e-mail estiver cadastrado, você receberá as instruções de recuperação.</p></form><p class="form-switch"><button type="button" data-show="login-panel">Voltar ao login</button></p></section>
+		<section class="form-panel hidden" id="register-panel"><p class="eyebrow">Primeiro pedido por nossa conta</p><h1>Vamos nos conhecer.</h1><p>Crie seu cadastro para agilizar seus próximos pedidos.</p><form id="register-form"><div class="form-field"><label class="field-label" for="register-name">Nome</label><input class="text-field" id="register-name" name="name" autocomplete="name" required></div><div class="form-field"><label class="field-label" for="register-email">E-mail</label><input class="text-field" id="register-email" name="email" type="email" autocomplete="email" required></div><div class="form-field"><label class="field-label" for="register-phone">WhatsApp</label><input class="text-field" id="register-phone" name="phone" type="tel" autocomplete="tel" placeholder="(11) 99999-9999" maxlength="20" required></div><div class="form-field"><label class="field-label" for="register-password">Senha</label><input class="text-field" id="register-password" name="password" type="password" autocomplete="new-password" minlength="6" required></div><button class="button button-red" type="submit">Criar cadastro <span aria-hidden="true">→</span></button><p class="form-feedback hidden" id="register-feedback" role="status"></p></form><p class="form-switch">Já tem cadastro? <button type="button" data-show="login-panel">Entrar</button></p></section>
+		<section class="form-panel hidden" id="recovery-panel"><p class="eyebrow">Acontece</p><h1>Recupere seu acesso.</h1><p>Informe o e-mail usado no cadastro para receber as instruções.</p><form id="recovery-form"><div class="form-field"><label class="field-label" for="recovery-email">E-mail</label><input class="text-field" id="recovery-email" name="email" type="email" autocomplete="email" required></div><button class="button button-red" type="submit">Enviar instruções <span aria-hidden="true">→</span></button><p class="form-feedback hidden" id="recovery-feedback" role="status"></p></form><p class="form-switch"><button type="button" data-show="login-panel">Voltar ao login</button></p></section>
+		<section class="form-panel hidden" id="reset-panel"><p class="eyebrow">Quase lá</p><h1>Crie uma nova senha.</h1><p>Escolha uma senha com pelo menos 6 caracteres.</p><form id="reset-form"><div class="form-field"><label class="field-label" for="reset-password">Nova senha</label><input class="text-field" id="reset-password" name="password" type="password" autocomplete="new-password" minlength="6" required></div><div class="form-field"><label class="field-label" for="reset-confirm-password">Confirmar senha</label><input class="text-field" id="reset-confirm-password" name="confirmPassword" type="password" autocomplete="new-password" minlength="6" required></div><button class="button button-red" type="submit">Alterar senha <span aria-hidden="true">→</span></button><p class="form-feedback hidden" id="reset-feedback" role="status"></p></form></section>
 	</main>
 	<footer class="site-footer"><a class="brand brand-footer" href="index.html"><span class="brand-mark" aria-hidden="true">P</span><span>Pizzaburguer</span></a><p>Feita com calma. Entregue com carinho.</p><div class="footer-links"><a href="cardapio.html">Cardápio</a><a href="sobre.html">Contato</a><a href="admin.html">Admin</a></div><small>© 2026 Pizzaburguer. Todos os direitos reservados.</small></footer>
 	<script>
 		const apiBase = '/api';
+		const panels = document.querySelectorAll('.form-panel');
+		const showPanel = (panelId) => {
+			panels.forEach((panel) => panel.classList.toggle('hidden', panel.id !== panelId));
+		};
 		document.querySelectorAll('[data-show]').forEach((button) => button.addEventListener('click', () => {
-			document.querySelectorAll('.form-panel').forEach((panel) => panel.classList.add('hidden'));
-			document.querySelector(`#${button.dataset.show}`).classList.remove('hidden');
+			showPanel(button.dataset.show);
 		}));
 		document.querySelector('#register-form').addEventListener('submit', async (event) => {
 			event.preventDefault();
@@ -36,7 +41,8 @@
 			const payload = {
 				nome: String(form.get('name')).trim(),
 				email: String(form.get('email')).trim().toLowerCase(),
-				senha: String(form.get('password'))
+				senha: String(form.get('password')),
+				telefone: String(form.get('phone')).trim()
 			};
 			const feedback = document.querySelector('#register-feedback');
 			try {
@@ -47,13 +53,14 @@
 				});
 				const result = await response.json();
 				if (!response.ok) throw new Error(result.erro || 'Erro ao cadastrar.');
-				feedback.textContent = 'Cadastro criado com sucesso! Você já pode entrar na sua conta.';
+				document.querySelector('#login-feedback').textContent = 'Cadastro realizado! Faça seu login.';
+				document.querySelector('#login-feedback').classList.remove('hidden');
 				formElement.reset();
-				localStorage.setItem('pizzaburguer-session', JSON.stringify({ name: result.nome, email: result.email, tipo: result.tipo }));
+				showPanel('login-panel');
 			} catch (error) {
-				feedback.textContent = error.message || 'Não foi possível cadastrar agora.';
+				feedback.textContent = error instanceof Error ? error.message : 'Não foi possível cadastrar agora.';
+				feedback.classList.remove('hidden');
 			}
-			feedback.classList.remove('hidden');
 		});
 		document.querySelector('#login-form').addEventListener('submit', async (event) => {
 			event.preventDefault();
@@ -71,16 +78,68 @@
 				});
 				const result = await response.json();
 				if (!response.ok) throw new Error(result.erro || 'Credenciais inválidas.');
-				feedback.textContent = `Olá, ${result.nome}! Login realizado com sucesso.`;
-				localStorage.setItem('pizzaburguer-session', JSON.stringify({ name: result.nome, email: result.email, tipo: result.tipo }));
+				localStorage.setItem('pizzaburguer-session', JSON.stringify({
+					id: result.id,
+					name: result.nome,
+					email: result.email,
+					tipo: result.tipo,
+					telefone: result.telefone
+				}));
+				const redirect = new URLSearchParams(window.location.search).get('redirect');
+				window.location.assign(['pedido.html', 'carrinho.html'].includes(redirect) ? redirect : 'cardapio.html');
 			} catch (error) {
-				feedback.textContent = error.message || 'E-mail ou senha inválidos.';
+				feedback.textContent = error instanceof Error ? error.message : 'E-mail ou senha inválidos.';
+				feedback.classList.remove('hidden');
+			}
+		});
+		document.querySelector('#recovery-form').addEventListener('submit', async (event) => {
+			event.preventDefault();
+			const feedback = document.querySelector('#recovery-feedback');
+			const email = String(new FormData(event.currentTarget).get('email')).trim().toLowerCase();
+			try {
+				const response = await fetch(`${apiBase}/recuperar-senha`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ email })
+				});
+				const result = await response.json();
+				if (!response.ok) throw new Error(result.erro || 'Não foi possível solicitar a recuperação.');
+				feedback.textContent = result.mensagem;
+			} catch (error) {
+				feedback.textContent = error instanceof Error ? error.message : 'Não foi possível solicitar a recuperação.';
 			}
 			feedback.classList.remove('hidden');
 		});
-		document.querySelector('#recovery-form').addEventListener('submit', (event) => {
+		const resetToken = new URLSearchParams(window.location.search).get('token');
+		if (resetToken) showPanel('reset-panel');
+		document.querySelector('#reset-form').addEventListener('submit', async (event) => {
 			event.preventDefault();
-			document.querySelector('#recovery-feedback').classList.remove('hidden');
+			const form = new FormData(event.currentTarget);
+			const password = String(form.get('password'));
+			const confirmPassword = String(form.get('confirmPassword'));
+			const feedback = document.querySelector('#reset-feedback');
+			if (password !== confirmPassword) {
+				feedback.textContent = 'As senhas não coincidem.';
+				feedback.classList.remove('hidden');
+				return;
+			}
+			try {
+				const response = await fetch(`${apiBase}/redefinir-senha`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ token: resetToken, novaSenha: password })
+				});
+				const result = await response.json();
+				if (!response.ok) throw new Error(result.erro || 'Não foi possível alterar a senha.');
+				showPanel('login-panel');
+				const loginFeedback = document.querySelector('#login-feedback');
+				loginFeedback.textContent = result.mensagem;
+				loginFeedback.classList.remove('hidden');
+				window.history.replaceState({}, document.title, window.location.pathname);
+			} catch (error) {
+				feedback.textContent = error instanceof Error ? error.message : 'Não foi possível alterar a senha.';
+				feedback.classList.remove('hidden');
+			}
 		});
 		const menuToggle = document.querySelector('.menu-toggle');
 		menuToggle.addEventListener('click', () => {

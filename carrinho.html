@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="theme-color" content="#c73523">
+	<title>Meus pedidos | Pizzaburguer</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="css/style.css">
+	<script src="javascript/sessao.js" defer></script>
+	<script src="javascript/meus-pedidos.js" defer></script>
+</head>
+<body>
+	<header class="site-header">
+		<a class="brand" href="index.html" aria-label="Pizzaburguer, início"><span class="brand-mark" aria-hidden="true">P</span><span>Pizzaburguer</span></a>
+		<nav class="main-nav" aria-label="Navegação principal"><a href="index.html">Início</a><a href="cardapio.html">Cardápio</a><a class="active" href="carrinho.html">Meus pedidos</a><a href="sobre.html">Sobre</a></nav>
+		<div class="header-actions"><a class="header-login" href="login.html">Entrar</a><a class="button button-small button-dark" href="pedido.html"><span aria-hidden="true">▣</span> Meu pedido <span class="cart-count" data-cart-count>0</span></a></div>
+		<button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false"><span></span><span></span></button>
+	</header>
+	<main>
+		<section class="page-intro"><div class="page-heading"><p class="eyebrow">Acompanhe cada etapa</p><h1>Meus pedidos.</h1><p>Veja o resumo, o andamento e as informações de cada pedido.</p></div></section>
+		<section class="orders-page">
+			<div class="orders-heading"><p class="form-feedback hidden" id="orders-feedback" role="alert"></p><button class="button button-dark button-small" id="refresh-orders" type="button">Atualizar status</button></div>
+			<div class="order-history" id="order-history" aria-live="polite"><p>Carregando seus pedidos...</p></div>
+		</section>
+	</main>
+	<footer class="site-footer"><a class="brand brand-footer" href="index.html"><span class="brand-mark" aria-hidden="true">P</span><span>Pizzaburguer</span></a><p>Feita com calma. Entregue com carinho.</p><div class="footer-links"><a href="cardapio.html">Cardápio</a><a href="pedido.html">Fazer pedido</a><a href="sobre.html">Contato</a></div><small>© 2026 Pizzaburguer. Todos os direitos reservados.</small></footer>
+</body>
+</html>

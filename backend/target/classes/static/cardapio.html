@@ -9,6 +9,7 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="css/style.css">
+	<script src="javascript/sessao.js" defer></script>
 </head>
 <body>
 	<header class="site-header">
@@ -62,6 +63,10 @@
 		document.addEventListener('click', (event) => {
 			const button = event.target.closest('[data-add]');
 			if (!button) return;
+			if (!localStorage.getItem('pizzaburguer-session')) {
+				window.location.assign('login.html');
+				return;
+			}
 			const product = fullMenu.find((item) => item.id === button.dataset.add);
 			const cart = JSON.parse(localStorage.getItem('pizzaburguer-cart') || '[]');
 			const existing = cart.find((item) => item.id === product.id);

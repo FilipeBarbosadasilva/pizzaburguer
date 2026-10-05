@@ -19,6 +19,8 @@ const defaults = [
 		const money = (value) => Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 		const read = (key, fallback = []) => JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
 		const store = (key, value) => localStorage.setItem(key, JSON.stringify(value));
+		let apiOrders = [];
+		let registeredCustomers = [];
 		const currentMenu = () => {
 			const removed = read('pizzaburguer-menu-removed');
 			const overrides = read('pizzaburguer-menu-overrides', {});
@@ -26,51 +28,55 @@ const defaults = [
 		};
 		const renderDashboard = () => {
 			const menu = currentMenu();
-			const orders = read('pizzaburguer-orders');
-			const users = read('pizzaburguer-users');
+			const orders = apiOrders;
+			const users = registeredCustomers;
 			const now = new Date();
-			const todayOrders = orders.filter((order) => new Date(order.createdAt).toDateString() === now.toDateString());
-			const monthOrders = orders.filter((order) => { const date = new Date(order.createdAt); return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear(); });
+			const activeOrders = orders.filter((order) => order.status !== 'Cancelado');
+			const todayOrders = activeOrders.filter((order) => new Date(order.data).toDateString() === now.toDateString());
+			const monthOrders = activeOrders.filter((order) => { const date = new Date(order.data); return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear(); });
 			document.querySelector('#stat-orders').textContent = todayOrders.length;
-			document.querySelector('#stat-day').textContent = money(todayOrders.reduce((sum, order) => sum + order.total, 0));
-			document.querySelector('#stat-month').textContent = money(monthOrders.reduce((sum, order) => sum + order.total, 0));
+			document.querySelector('#stat-day').textContent = money(todayOrders.reduce((sum, order) => sum + Number(order.total), 0));
+			document.querySelector('#stat-month').textContent = money(monthOrders.reduce((sum, order) => sum + Number(order.total), 0));
 			document.querySelector('#menu-table').innerHTML = menu.length ? menu.map((item) => `<tr><td>${escapeHtml(item.name)}<br><small>${escapeHtml(item.category)}</small></td><td>${money(item.price)}</td><td><button class="table-action" type="button" data-edit="${escapeHtml(item.id)}">Editar</button> <button class="table-action" type="button" data-delete="${escapeHtml(item.id)}">Remover</button></td></tr>`).join('') : '<tr><td colspan="3">Nenhum item cadastrado.</td></tr>';
-			document.querySelector('#orders-table').innerHTML = orders.length ? orders.map((order) => `<tr><td>#${String(order.id).slice(-6)}</td><td>${escapeHtml(order.name)}</td><td>${money(order.total)}</td><td><select data-status="${order.id}" aria-label="Status do pedido de ${escapeHtml(order.name)}"><option ${order.status === 'Pendente' ? 'selected' : ''}>Pendente</option><option ${order.status === 'Em preparo' ? 'selected' : ''}>Em preparo</option><option ${order.status === 'Saiu para entrega' ? 'selected' : ''}>Saiu para entrega</option><option ${order.status === 'Entregue' ? 'selected' : ''}>Entregue</option></select></td></tr>`).join('') : '<tr><td colspan="4">Nenhum pedido recebido.</td></tr>';
-			document.querySelector('#customers-table').innerHTML = users.length ? users.map((user) => `<tr><td>${escapeHtml(user.name)}</td><td>${escapeHtml(user.email)}</td></tr>`).join('') : '<tr><td colspan="2">Nenhum cliente cadastrado.</td></tr>';
+			document.querySelector('#orders-table').innerHTML = orders.length ? orders.map((order) => {
+				const phone = String(order.telefone || '').replace(/\D/g, '');
+				const whatsappNumber = phone.length === 10 || phone.length === 11 ? `55${phone}` : phone;
+				const whatsapp = phone ? `<a href="https://wa.me/${whatsappNumber}" target="_blank" rel="noreferrer">${escapeHtml(order.telefone)}</a>` : '—';
+				const summary = (order.itens || []).map((item) => `${item.quantity}× ${item.name}`).join(', ');
+				return `<tr><td>#${String(order.id).slice(-6)}</td><td>${escapeHtml(order.nome)}</td><td>${escapeHtml(summary)}</td><td>${whatsapp}</td><td>${money(order.total)}</td><td><select data-status="${order.id}" aria-label="Status do pedido de ${escapeHtml(order.nome)}"><option ${order.status === 'Pendente' ? 'selected' : ''}>Pendente</option><option ${order.status === 'Em preparo' ? 'selected' : ''}>Em preparo</option><option ${order.status === 'Saiu para entrega' ? 'selected' : ''}>Saiu para entrega</option><option ${order.status === 'Entregue' ? 'selected' : ''}>Entregue</option><option ${order.status === 'Cancelado' ? 'selected' : ''} disabled>Cancelado</option></select></td></tr>`;
+			}).join('') : '<tr><td colspan="6">Nenhum pedido recebido.</td></tr>';
+			document.querySelector('#customers-table').innerHTML = users.length ? users.map((user) => {
+				const phone = String(user.telefone || '').replace(/\D/g, '');
+				const whatsappNumber = phone.length === 10 || phone.length === 11 ? `55${phone}` : phone;
+				const whatsapp = phone ? `<a href="https://wa.me/${whatsappNumber}" target="_blank" rel="noreferrer">${escapeHtml(user.telefone)}</a>` : 'Não informado';
+				return `<tr><td>${escapeHtml(user.nome)}</td><td>${escapeHtml(user.email)}</td><td>${whatsapp}</td></tr>`;
+			}).join('') : '<tr><td colspan="3">Nenhum cliente cadastrado.</td></tr>';
 		};
-		const showDashboard = () => {
-			document.querySelector('#admin-login').classList.add('hidden');
-			document.querySelector('#admin-dashboard').classList.remove('hidden');
-			document.querySelector('#admin-logout').classList.remove('hidden');
-			renderDashboard();
-		};
-		document.querySelector('#admin-login-form').addEventListener('submit', async (event) => {
-			event.preventDefault();
-			const form = new FormData(event.currentTarget);
-			const email = String(form.get('email')).trim().toLowerCase();
-			const password = String(form.get('password'));
-			const feedback = document.querySelector('#admin-login-feedback');
+		const refreshDashboard = async () => {
 			try {
-				const response = await fetch('/api/login', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ email, senha: password })
-				});
-				const result = await response.json();
-				if (!response.ok || result.tipo !== 'ADMIN') throw new Error('Credenciais de administrador inválidas.');
-				sessionStorage.setItem('pizzaburguer-admin-auth', 'true');
-				showDashboard();
+				const [ordersResponse, customersResponse] = await Promise.all([
+					fetch('/api/admin/pedidos'),
+					fetch('/api/admin/clientes')
+				]);
+				if (!ordersResponse.ok || !customersResponse.ok) {
+					throw new Error(`Não foi possível atualizar pedidos e clientes (HTTP ${ordersResponse.status}/${customersResponse.status}).`);
+				}
+				[apiOrders, registeredCustomers] = await Promise.all([
+					ordersResponse.json(),
+					customersResponse.json()
+				]);
+				document.querySelector('#admin-data-error').classList.add('hidden');
+				renderDashboard();
 			} catch (error) {
-				feedback.textContent = error.message || 'Senha incorreta.';
+				const feedback = document.querySelector('#admin-data-error');
+				feedback.textContent = error instanceof Error ? error.message : 'Não foi possível carregar os dados administrativos.';
 				feedback.classList.remove('hidden');
 			}
-		});
-		document.querySelector('#admin-logout').addEventListener('click', () => {
-			sessionStorage.removeItem('pizzaburguer-admin-auth');
-			document.querySelector('#admin-dashboard').classList.add('hidden');
-			document.querySelector('#admin-login').classList.remove('hidden');
-			document.querySelector('#admin-logout').classList.add('hidden');
-		});
+		};
+		const showDashboard = () => {
+			document.querySelector('#admin-dashboard').classList.remove('hidden');
+			refreshDashboard();
+		};
 		document.querySelector('#product-form').addEventListener('submit', (event) => {
 			event.preventDefault();
 			const form = new FormData(event.currentTarget);
@@ -114,8 +120,24 @@ const defaults = [
 		document.querySelector('#orders-table').addEventListener('change', (event) => {
 			const select = event.target.closest('[data-status]');
 			if (!select) return;
-			store('pizzaburguer-orders', read('pizzaburguer-orders').map((order) => String(order.id) === select.dataset.status ? { ...order, status: select.value } : order));
+			const previousStatus = apiOrders.find((order) => String(order.id) === select.dataset.status)?.status;
+			fetch(`/api/admin/pedidos/${encodeURIComponent(select.dataset.status)}/status`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ status: select.value })
+			}).then(async (response) => {
+				if (!response.ok) {
+					const result = await response.json().catch(() => ({}));
+					throw new Error(result.message || `Não foi possível atualizar o status (HTTP ${response.status}).`);
+				}
+				await refreshDashboard();
+			}).catch((error) => {
+				window.alert(error instanceof Error ? error.message : 'Não foi possível atualizar o status.');
+				select.value = previousStatus || 'Pendente';
+			});
 		});
-		if (sessionStorage.getItem('pizzaburguer-admin-auth') === 'true') showDashboard();
+		document.querySelector('#refresh-dashboard').addEventListener('click', refreshDashboard);
+		const currentUser = JSON.parse(localStorage.getItem('pizzaburguer-session') || 'null');
+		if (currentUser?.tipo === 'ADMIN') showDashboard();
 
      

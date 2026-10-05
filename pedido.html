@@ -9,11 +9,12 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="css/style.css">
+	<script src="javascript/sessao.js" defer></script>
 </head>
 <body>
 	<header class="site-header">
 		<a class="brand" href="index.html" aria-label="Pizzaburguer, início"><span class="brand-mark" aria-hidden="true">P</span><span>Pizzaburguer</span></a>
-		<nav class="main-nav" aria-label="Navegação principal"><a href="index.html">Início</a><a href="cardapio.html">Cardápio</a><a href="sobre.html">Sobre</a></nav>
+		<nav class="main-nav" aria-label="Navegação principal"><a href="index.html">Início</a><a href="cardapio.html">Cardápio</a><a href="carrinho.html">Meus pedidos</a><a href="sobre.html">Sobre</a></nav>
 		<div class="header-actions"><a class="header-login" href="login.html">Entrar</a><a class="button button-small button-dark" href="pedido.html"><span aria-hidden="true">▣</span> Meu pedido <span class="cart-count" data-cart-count>0</span></a></div>
 		<button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false"><span></span><span></span></button>
 	</header>
@@ -22,7 +23,7 @@
 		<form class="checkout-layout" id="order-form">
 			<div class="checkout-main">
 				<section class="checkout-block"><h2>Itens escolhidos</h2><div class="cart-list" id="cart-list" aria-live="polite"></div><a class="text-link" href="cardapio.html">+ Adicionar mais itens ao pedido</a></section>
-				<section class="checkout-block"><h2>Seus dados</h2><div class="form-field"><label class="field-label" for="customer-name">Nome</label><input class="text-field" id="customer-name" name="name" autocomplete="name" required></div><div class="form-field"><label class="field-label" for="customer-phone">Telefone</label><input class="text-field" id="customer-phone" name="phone" type="tel" autocomplete="tel" required></div><div class="form-field" id="address-field"><label class="field-label" for="customer-address">Endereço para entrega</label><input class="text-field" id="customer-address" name="address" autocomplete="street-address" placeholder="Rua, número, bairro e complemento"></div></section>
+				<section class="checkout-block"><h2>Seus dados</h2><div class="form-field"><label class="field-label" for="customer-name">Nome</label><input class="text-field" id="customer-name" name="name" autocomplete="name" required></div><div class="form-field"><label class="field-label" for="customer-phone">WhatsApp para contato</label><input class="text-field" id="customer-phone" name="phone" type="tel" autocomplete="tel" required></div><div class="form-field" id="address-field"><label class="field-label" for="customer-address">Endereço para entrega</label><input class="text-field" id="customer-address" name="address" autocomplete="street-address" placeholder="Rua, número, bairro e complemento"></div></section>
 				<section class="checkout-block"><h2>Observações</h2><label class="field-label" for="order-note">Algum detalhe para a cozinha?</label><textarea class="text-area" id="order-note" name="notes" placeholder="Ex.: sem cebola, borda recheada..."></textarea></section>
 				<section class="checkout-block"><h2>Como prefere receber?</h2><div class="choice-grid">
 					<div class="choice-card"><input id="delivery" name="fulfillment" type="radio" value="Entrega" checked><label for="delivery"><span class="choice-icon" aria-hidden="true">⌂</span>Entrega</label></div>
@@ -42,7 +43,12 @@
 	<script>
 		const money = (value) => Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 		let cart = JSON.parse(localStorage.getItem('pizzaburguer-cart') || '[]');
+		const currentUser = JSON.parse(localStorage.getItem('pizzaburguer-session') || 'null');
 		const cartList = document.querySelector('#cart-list');
+		if (currentUser) {
+			document.querySelector('#customer-name').value = currentUser.name;
+			document.querySelector('#customer-phone').value = currentUser.telefone || '';
+		}
 		const deliveryFee = () => document.querySelector('#delivery').checked ? 5 : 0;
 		const totalCount = () => cart.reduce((sum, item) => sum + item.quantity, 0);
 		const renderCart = () => {
@@ -87,20 +93,48 @@
 			renderCart();
 		}));
 		document.querySelector('#customer-address').required = deliveryFee() > 0;
-		document.querySelector('#order-form').addEventListener('submit', (event) => {
+		document.querySelector('#order-form').addEventListener('submit', async (event) => {
 			event.preventDefault();
 			if (!cart.length) { document.querySelector('#order-success').textContent = 'Adicione pelo menos um item antes de finalizar.'; document.querySelector('#order-success').classList.remove('hidden'); return; }
 			const form = new FormData(event.currentTarget);
 			const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-			const orders = JSON.parse(localStorage.getItem('pizzaburguer-orders') || '[]');
-			const order = { id: Date.now(), name: form.get('name'), phone: form.get('phone'), address: form.get('address'), fulfillment: form.get('fulfillment'), payment: form.get('payment'), notes: form.get('notes'), items: cart, total: subtotal + deliveryFee(), status: 'Pendente', createdAt: new Date().toISOString() };
-			orders.unshift(order);
-			localStorage.setItem('pizzaburguer-orders', JSON.stringify(orders));
+			const orderData = {
+				nome: form.get('name'),
+				telefone: form.get('phone'),
+				endereco: form.get('address'),
+				observacoes: form.get('notes'),
+				formaPagamento: form.get('payment'),
+				formaEntrega: form.get('fulfillment'),
+				total: subtotal + deliveryFee(),
+				itens: cart
+			};
+			let savedOrder;
+			try {
+				const response = await fetch('/api/pedidos', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(orderData)
+				});
+				if (!response.ok) {
+					const result = await response.json().catch(() => ({}));
+					throw new Error(result.erro || `Não foi possível registrar o pedido (HTTP ${response.status}).`);
+				}
+				savedOrder = await response.json();
+			} catch (error) {
+				const message = document.querySelector('#order-success');
+				message.textContent = error instanceof Error ? error.message : 'Não foi possível registrar o pedido.';
+				message.classList.add('error');
+				message.classList.remove('hidden');
+				return;
+			}
+			const order = savedOrder;
 			cart = [];
 			localStorage.setItem('pizzaburguer-cart', '[]');
 			renderCart();
 			const success = document.querySelector('#order-success');
-			success.textContent = `Pedido #${String(order.id).slice(-6)} recebido. Obrigado, ${order.name}!`;
+			const customerName = String(order.nome).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+			success.innerHTML = `Pedido #${String(order.id).slice(-6)} recebido. Obrigado, ${customerName}! <a href="carrinho.html">Acompanhar pedido</a>`;
+			success.classList.remove('error');
 			success.classList.remove('hidden');
 			document.querySelector('#finish-order').disabled = true;
 		});
