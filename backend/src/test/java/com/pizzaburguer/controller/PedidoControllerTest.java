@@ -24,6 +24,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,7 +47,7 @@ class PedidoControllerTest {
         customer.setTipo(Usuario.TipoUsuario.CLIENTE);
         customerAuth = new UsernamePasswordAuthenticationToken(
                 customer.getEmail(), null, List.of(new SimpleGrantedAuthority("ROLE_CLIENTE")));
-        when(usuarioRepository.findByEmail(customer.getEmail())).thenReturn(Optional.of(customer));
+        lenient().when(usuarioRepository.findByEmail(customer.getEmail())).thenReturn(Optional.of(customer));
     }
 
     @Test
@@ -111,6 +112,49 @@ class PedidoControllerTest {
 
         assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
         verify(pedidoRepository, never()).save(any(Pedido.class));
+    }
+
+    @Test
+    void adminCanRemoveCanceledOrders() {
+        Pedido pedido = makeOrder(52L, "Cancelado");
+        when(pedidoRepository.findById(52L)).thenReturn(Optional.of(pedido));
+
+        assertEquals(HttpStatus.NO_CONTENT, controller.removerPedidoCancelado(52L).getStatusCode());
+
+        verify(pedidoRepository).delete(pedido);
+    }
+
+    @Test
+    void adminCannotRemoveOrdersThatWereNotCanceled() {
+        Pedido pedido = makeOrder(52L, "Pendente");
+        when(pedidoRepository.findById(52L)).thenReturn(Optional.of(pedido));
+
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                () -> controller.removerPedidoCancelado(52L));
+
+        assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+        verify(pedidoRepository, never()).delete(any(Pedido.class));
+    }
+
+    @Test
+    void popularItemsReportCountsOnlyOrdersThatWereNotCanceled() {
+        Pedido popularOrder = makeOrder(52L, "Entregue");
+        popularOrder.setItensJson("[{\"name\":\"Calabresa\",\"quantity\":2},{\"name\":\"Suco\",\"quantity\":1}]");
+        Pedido secondOrder = makeOrder(53L, "Em preparo");
+        secondOrder.setItensJson("[{\"name\":\"Calabresa\",\"quantity\":1},{\"name\":\"Muçarela\",\"quantity\":2}]");
+        Pedido canceledOrder = makeOrder(54L, "Cancelado");
+        canceledOrder.setItensJson("[{\"name\":\"Suco\",\"quantity\":20}]");
+        when(pedidoRepository.findAllByOrderByDataDesc())
+                .thenReturn(List.of(popularOrder, secondOrder, canceledOrder));
+
+        List<Map<String, Object>> report = controller.relatorioMaisPedidos().getBody();
+
+        assertNotNull(report);
+        assertEquals(List.of(
+                Map.of("nome", "Calabresa", "quantidade", 3L),
+                Map.of("nome", "Muçarela", "quantidade", 2L),
+                Map.of("nome", "Suco", "quantidade", 1L)), report);
     }
 
     private Pedido makeOrder(Long id, String status) {

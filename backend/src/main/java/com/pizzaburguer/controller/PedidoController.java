@@ -134,6 +134,19 @@ public class PedidoController {
                 .toList());
     }
 
+    @DeleteMapping("/admin/pedidos/{id}")
+    @Transactional
+    public ResponseEntity<Void> removerPedidoCancelado(@PathVariable Long id) {
+        Pedido pedido = pedidoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        if (!pedido.getStatus().equals("Cancelado")) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT, "Somente pedidos cancelados podem ser removidos.");
+        }
+        pedidoRepository.delete(pedido);
+        return ResponseEntity.noContent().build();
+    }
+
     @PutMapping("/admin/pedidos/{id}/status")
     public ResponseEntity<Map<String, Object>> atualizarStatus(
             @PathVariable Long id,
@@ -177,6 +190,35 @@ public class PedidoController {
         relatorio.put("faturamentoTotal", faturamento);
         relatorio.put("faturamentoHoje", faturamentoHoje);
         relatorio.put("faturamentoMes", faturamentoMes);
+        return ResponseEntity.ok(relatorio);
+    }
+
+    @GetMapping("/admin/relatorio/mais-pedidos")
+    public ResponseEntity<List<Map<String, Object>>> relatorioMaisPedidos() {
+        Map<String, Long> quantidadesPorItem = new HashMap<>();
+        for (Pedido pedido : pedidoRepository.findAllByOrderByDataDesc()) {
+            if (pedido.getStatus().equals("Cancelado")) {
+                continue;
+            }
+            for (Map<String, Object> item : parseItems(pedido.getItensJson())) {
+                Object nome = item.get("name");
+                Object quantidade = item.get("quantity");
+                if (!(nome instanceof String itemName) || itemName.isBlank()
+                        || !(quantidade instanceof Number itemQuantity)) {
+                    throw new IllegalStateException("Os itens gravados do pedido têm dados inválidos.");
+                }
+                quantidadesPorItem.put(itemName,
+                        quantidadesPorItem.getOrDefault(itemName, 0L) + itemQuantity.longValue());
+            }
+        }
+
+        List<Map<String, Object>> relatorio = quantidadesPorItem.entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed()
+                        .thenComparing(Map.Entry.comparingByKey(String.CASE_INSENSITIVE_ORDER)))
+                .map(entry -> Map.<String, Object>of(
+                        "nome", entry.getKey(),
+                        "quantidade", entry.getValue()))
+                .toList();
         return ResponseEntity.ok(relatorio);
     }
 
@@ -225,12 +267,16 @@ public class PedidoController {
         response.put("total", pedido.getTotal());
         response.put("status", pedido.getStatus());
         response.put("data", pedido.getData());
+        response.put("itens", parseItems(pedido.getItensJson()));
+        return response;
+    }
+
+    private List<Map<String, Object>> parseItems(String itensJson) {
         try {
-            response.put("itens", objectMapper.readValue(pedido.getItensJson(), ITEMS_TYPE));
+            return objectMapper.readValue(itensJson, ITEMS_TYPE);
         } catch (JsonProcessingException exception) {
             throw new IllegalStateException("Os itens gravados do pedido não puderam ser lidos.", exception);
         }
-        return response;
     }
 
     public record CriarPedidoRequest(

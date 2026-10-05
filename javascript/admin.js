@@ -21,6 +21,7 @@ const defaults = [
 		const store = (key, value) => localStorage.setItem(key, JSON.stringify(value));
 		let apiOrders = [];
 		let registeredCustomers = [];
+		let popularItems = [];
 		const currentMenu = () => {
 			const removed = read('pizzaburguer-menu-removed');
 			const overrides = read('pizzaburguer-menu-overrides', {});
@@ -43,8 +44,14 @@ const defaults = [
 				const whatsappNumber = phone.length === 10 || phone.length === 11 ? `55${phone}` : phone;
 				const whatsapp = phone ? `<a href="https://wa.me/${whatsappNumber}" target="_blank" rel="noreferrer">${escapeHtml(order.telefone)}</a>` : '—';
 				const summary = (order.itens || []).map((item) => `${item.quantity}× ${item.name}`).join(', ');
-				return `<tr><td>#${String(order.id).slice(-6)}</td><td>${escapeHtml(order.nome)}</td><td>${escapeHtml(summary)}</td><td>${whatsapp}</td><td>${money(order.total)}</td><td><select data-status="${order.id}" aria-label="Status do pedido de ${escapeHtml(order.nome)}"><option ${order.status === 'Pendente' ? 'selected' : ''}>Pendente</option><option ${order.status === 'Em preparo' ? 'selected' : ''}>Em preparo</option><option ${order.status === 'Saiu para entrega' ? 'selected' : ''}>Saiu para entrega</option><option ${order.status === 'Entregue' ? 'selected' : ''}>Entregue</option><option ${order.status === 'Cancelado' ? 'selected' : ''} disabled>Cancelado</option></select></td></tr>`;
-			}).join('') : '<tr><td colspan="6">Nenhum pedido recebido.</td></tr>';
+				const removeAction = order.status === 'Cancelado'
+					? `<button class="table-action" type="button" data-remove-order="${order.id}" aria-label="Remover pedido cancelado ${order.id}">Remover</button>`
+					: '—';
+				return `<tr><td>#${String(order.id).slice(-6)}</td><td>${escapeHtml(order.nome)}</td><td>${escapeHtml(summary)}</td><td>${whatsapp}</td><td>${money(order.total)}</td><td><select data-status="${order.id}" aria-label="Status do pedido de ${escapeHtml(order.nome)}"><option ${order.status === 'Pendente' ? 'selected' : ''}>Pendente</option><option ${order.status === 'Em preparo' ? 'selected' : ''}>Em preparo</option><option ${order.status === 'Saiu para entrega' ? 'selected' : ''}>Saiu para entrega</option><option ${order.status === 'Entregue' ? 'selected' : ''}>Entregue</option><option ${order.status === 'Cancelado' ? 'selected' : ''} disabled>Cancelado</option></select></td><td>${removeAction}</td></tr>`;
+			}).join('') : '<tr><td colspan="7">Nenhum pedido recebido.</td></tr>';
+			document.querySelector('#popular-items-table').innerHTML = popularItems.length
+				? popularItems.map((item, index) => `<tr><td>${index + 1}</td><td>${escapeHtml(item.nome)}</td><td>${item.quantidade}</td></tr>`).join('')
+				: '<tr><td colspan="3">Ainda não há itens pedidos.</td></tr>';
 			document.querySelector('#customers-table').innerHTML = users.length ? users.map((user) => {
 				const phone = String(user.telefone || '').replace(/\D/g, '');
 				const whatsappNumber = phone.length === 10 || phone.length === 11 ? `55${phone}` : phone;
@@ -54,16 +61,18 @@ const defaults = [
 		};
 		const refreshDashboard = async () => {
 			try {
-				const [ordersResponse, customersResponse] = await Promise.all([
+				const [ordersResponse, customersResponse, popularItemsResponse] = await Promise.all([
 					fetch('/api/admin/pedidos'),
-					fetch('/api/admin/clientes')
+					fetch('/api/admin/clientes'),
+					fetch('/api/admin/relatorio/mais-pedidos')
 				]);
-				if (!ordersResponse.ok || !customersResponse.ok) {
-					throw new Error(`Não foi possível atualizar pedidos e clientes (HTTP ${ordersResponse.status}/${customersResponse.status}).`);
+				if (!ordersResponse.ok || !customersResponse.ok || !popularItemsResponse.ok) {
+					throw new Error(`Não foi possível atualizar o painel (HTTP ${ordersResponse.status}/${customersResponse.status}/${popularItemsResponse.status}).`);
 				}
-				[apiOrders, registeredCustomers] = await Promise.all([
+				[apiOrders, registeredCustomers, popularItems] = await Promise.all([
 					ordersResponse.json(),
-					customersResponse.json()
+					customersResponse.json(),
+					popularItemsResponse.json()
 				]);
 				document.querySelector('#admin-data-error').classList.add('hidden');
 				renderDashboard();
@@ -135,6 +144,27 @@ const defaults = [
 				window.alert(error instanceof Error ? error.message : 'Não foi possível atualizar o status.');
 				select.value = previousStatus || 'Pendente';
 			});
+		});
+		document.querySelector('#orders-table').addEventListener('click', async (event) => {
+			const button = event.target.closest('[data-remove-order]');
+			if (!button) return;
+			const order = apiOrders.find((entry) => String(entry.id) === button.dataset.removeOrder);
+			if (!order || order.status !== 'Cancelado') return;
+			if (!window.confirm(`Remover definitivamente o pedido cancelado #${String(order.id).slice(-6)}?`)) return;
+			button.disabled = true;
+			try {
+				const response = await fetch(`/api/admin/pedidos/${encodeURIComponent(button.dataset.removeOrder)}`, {
+					method: 'DELETE'
+				});
+				if (!response.ok) {
+					const result = await response.json().catch(() => ({}));
+					throw new Error(result.message || `Não foi possível remover o pedido (HTTP ${response.status}).`);
+				}
+				await refreshDashboard();
+			} catch (error) {
+				window.alert(error instanceof Error ? error.message : 'Não foi possível remover o pedido.');
+				button.disabled = false;
+			}
 		});
 		document.querySelector('#refresh-dashboard').addEventListener('click', refreshDashboard);
 		const currentUser = JSON.parse(localStorage.getItem('pizzaburguer-session') || 'null');
