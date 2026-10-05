@@ -86,7 +86,10 @@
 					telefone: result.telefone
 				}));
 				const redirect = new URLSearchParams(window.location.search).get('redirect');
-				window.location.assign(['pedido.html', 'carrinho.html'].includes(redirect) ? redirect : 'cardapio.html');
+				const destination = result.tipo === 'ADMIN'
+					? 'admin.html'
+					: ['pedido.html', 'carrinho.html'].includes(redirect) ? redirect : 'cardapio.html';
+				window.location.assign(destination);
 			} catch (error) {
 				feedback.textContent = error instanceof Error ? error.message : 'E-mail ou senha inválidos.';
 				feedback.classList.remove('hidden');

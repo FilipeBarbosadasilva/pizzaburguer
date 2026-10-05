@@ -115,29 +115,6 @@ class PedidoControllerTest {
     }
 
     @Test
-    void adminCanRemoveCanceledOrders() {
-        Pedido pedido = makeOrder(52L, "Cancelado");
-        when(pedidoRepository.findById(52L)).thenReturn(Optional.of(pedido));
-
-        assertEquals(HttpStatus.NO_CONTENT, controller.removerPedidoCancelado(52L).getStatusCode());
-
-        verify(pedidoRepository).delete(pedido);
-    }
-
-    @Test
-    void adminCannotRemoveOrdersThatWereNotCanceled() {
-        Pedido pedido = makeOrder(52L, "Pendente");
-        when(pedidoRepository.findById(52L)).thenReturn(Optional.of(pedido));
-
-        ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
-                () -> controller.removerPedidoCancelado(52L));
-
-        assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
-        verify(pedidoRepository, never()).delete(any(Pedido.class));
-    }
-
-    @Test
     void popularItemsReportCountsOnlyOrdersThatWereNotCanceled() {
         Pedido popularOrder = makeOrder(52L, "Entregue");
         popularOrder.setItensJson("[{\"name\":\"Calabresa\",\"quantity\":2},{\"name\":\"Suco\",\"quantity\":1}]");
@@ -155,6 +132,19 @@ class PedidoControllerTest {
                 Map.of("nome", "Calabresa", "quantidade", 3L),
                 Map.of("nome", "Muçarela", "quantidade", 2L),
                 Map.of("nome", "Suco", "quantidade", 1L)), report);
+    }
+
+    @Test
+    void adminCanClearAllOrders() {
+        when(pedidoRepository.count()).thenReturn(3L, 0L);
+
+        Map<String, Long> result = controller.limparPedidos().getBody();
+
+        assertNotNull(result);
+        assertEquals(3L, result.get("quantidadeRemovida"));
+        assertEquals(0L, result.get("quantidadeRestante"));
+        verify(pedidoRepository).deleteAll();
+        verify(pedidoRepository).flush();
     }
 
     private Pedido makeOrder(Long id, String status) {

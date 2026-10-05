@@ -46,11 +46,7 @@ public class SecurityConfig {
                     }
                 })
                 .accessDeniedHandler((request, response, exception) -> {
-                    if (isAdminPage(request.getRequestURI(), request.getContextPath())) {
-                        response.sendRedirect(request.getContextPath() + "/");
-                    } else {
-                        response.sendError(HttpServletResponse.SC_FORBIDDEN);
-                    }
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN);
                 }))
             .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
 

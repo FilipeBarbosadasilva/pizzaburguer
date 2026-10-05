@@ -134,17 +134,19 @@ public class PedidoController {
                 .toList());
     }
 
-    @DeleteMapping("/admin/pedidos/{id}")
+    @DeleteMapping("/admin/pedidos")
     @Transactional
-    public ResponseEntity<Void> removerPedidoCancelado(@PathVariable Long id) {
-        Pedido pedido = pedidoRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        if (!pedido.getStatus().equals("Cancelado")) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT, "Somente pedidos cancelados podem ser removidos.");
+    public ResponseEntity<Map<String, Long>> limparPedidos() {
+        long quantidadeRemovida = pedidoRepository.count();
+        pedidoRepository.deleteAll();
+        pedidoRepository.flush();
+        long quantidadeRestante = pedidoRepository.count();
+        if (quantidadeRestante != 0) {
+            throw new IllegalStateException("A limpeza não removeu todos os pedidos.");
         }
-        pedidoRepository.delete(pedido);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(Map.of(
+                "quantidadeRemovida", quantidadeRemovida,
+                "quantidadeRestante", quantidadeRestante));
     }
 
     @PutMapping("/admin/pedidos/{id}/status")

@@ -36,12 +36,18 @@
 
 			document.querySelectorAll('.header-login').forEach((link) => link.classList.add('hidden'));
 			const navigation = document.querySelector('.main-nav');
-			if (navigation && !navigation.querySelector('[data-orders-link]')) {
-				const ordersLink = document.createElement('a');
-				ordersLink.href = 'carrinho.html';
-				ordersLink.dataset.ordersLink = '';
-				ordersLink.textContent = 'Meus pedidos';
-				navigation.append(ordersLink);
+			if (navigation) {
+				const existingOrdersLink = Array.from(navigation.querySelectorAll('a')).find((link) =>
+					new URL(link.href, window.location.href).pathname.endsWith('/carrinho.html'));
+				if (existingOrdersLink) {
+					existingOrdersLink.dataset.ordersLink = '';
+				} else {
+					const ordersLink = document.createElement('a');
+					ordersLink.href = 'carrinho.html';
+					ordersLink.dataset.ordersLink = '';
+					ordersLink.textContent = 'Meus pedidos';
+					navigation.append(ordersLink);
+				}
 			}
 			if (user.tipo === 'ADMIN' && navigation && !navigation.querySelector('[data-admin-link]')) {
 				const adminLink = document.createElement('a');
