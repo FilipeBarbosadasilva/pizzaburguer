@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -91,5 +92,17 @@ class RecuperacaoSenhaServiceTest {
         assertFalse(service.redefinirSenha("expired-token", "new-password"));
         verify(usuarioRepository, never()).save(any());
         verify(tokenRepository, never()).save(any());
+    }
+
+    @Test
+    void removesRecoveryTokenAndReportsMailDeliveryFailure() {
+        Usuario usuario = new Usuario();
+        usuario.setEmail("cliente@example.com");
+        when(usuarioRepository.findByEmail(usuario.getEmail())).thenReturn(Optional.of(usuario));
+        doThrow(new MailSendException("SMTP unavailable")).when(mailSender).send(any(SimpleMailMessage.class));
+
+        assertThrows(MailSendException.class, () -> service.solicitarRecuperacao(usuario.getEmail()));
+
+        verify(tokenRepository).delete(any(TokenRecuperacao.class));
     }
 }

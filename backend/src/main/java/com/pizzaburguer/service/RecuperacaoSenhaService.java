@@ -85,6 +85,7 @@ public class RecuperacaoSenhaService {
         } catch (MailException exception) {
             tokenRepository.delete(token);
             logger.error("Não foi possível enviar o e-mail de recuperação para a conta solicitada.", exception);
+            throw exception;
         }
     }
 }

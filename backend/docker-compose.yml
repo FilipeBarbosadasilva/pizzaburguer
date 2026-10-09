@@ -10,6 +10,13 @@ services:
       - "3307:3306"
     volumes:
       - pizzaburguer-db:/var/lib/mysql
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: pizzaburguer-mailpit
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
 
 volumes:
   pizzaburguer-db:

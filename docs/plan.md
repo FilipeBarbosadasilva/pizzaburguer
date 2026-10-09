@@ -297,6 +297,8 @@ Configuração do envio de e-mail (`application-mysql.properties` ou arquivo pr�
 - Servidor SMTP: para testes locais usar o Mailtrap ou uma conta Gmail com **senha de app** (não a senha normal da conta).
 - Propriedades `spring.mail.host`, `spring.mail.port`, `spring.mail.username`, `spring.mail.password`.
 - Usuário e senha do e-mail lidos de **variáveis de ambiente**, nunca escritos no código nem enviados ao GitHub.
+- Em desenvolvimento local, `docker-compose.yml` inicia o Mailpit na porta SMTP `1025`; consulte os e-mails recebidos em `http://localhost:8025`.
+- Se o servidor SMTP não estiver disponível, a recuperação informa que o envio falhou em vez de confirmar um e-mail que não foi enviado.
 
 Itens novos no código (só adicionar, sem mexer no que já funciona):
 - Dependência `spring-boot-starter-mail` no `pom.xml`

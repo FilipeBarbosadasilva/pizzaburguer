@@ -4,6 +4,7 @@ import com.pizzaburguer.model.Usuario;
 import com.pizzaburguer.service.RecuperacaoSenhaService;
 import com.pizzaburguer.service.UsuarioService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +17,7 @@ import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Pattern;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.mail.MailException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -91,9 +93,14 @@ public class AuthController {
 
     @PostMapping("/recuperar-senha")
     public ResponseEntity<Map<String, String>> recuperarSenha(@Valid @RequestBody EmailRequest request) {
-        recuperacaoSenhaService.solicitarRecuperacao(request.email().trim().toLowerCase());
-        return ResponseEntity.ok(Map.of(
-                "mensagem", "Se o e-mail estiver cadastrado, enviamos um link de recuperação"));
+        try {
+            recuperacaoSenhaService.solicitarRecuperacao(request.email().trim().toLowerCase());
+            return ResponseEntity.ok(Map.of(
+                    "mensagem", "Se o e-mail estiver cadastrado, enviamos um link de recuperação"));
+        } catch (MailException exception) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(Map.of(
+                    "erro", "Não foi possível enviar o e-mail de recuperação agora. Tente novamente mais tarde."));
+        }
     }
 
     @PostMapping("/redefinir-senha")

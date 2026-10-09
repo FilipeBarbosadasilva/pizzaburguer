@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mail.MailSendException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -74,5 +75,19 @@ class AuthControllerTest {
         assertEquals(401, result.getStatusCode().value());
         assertEquals(Map.of("erro", "Credenciais inválidas"), result.getBody());
         verifyNoInteractions(securityContextRepository);
+    }
+
+    @Test
+    void reportsWhenRecoveryEmailCannotBeSent() {
+        doThrow(new MailSendException("SMTP unavailable"))
+                .when(recuperacaoSenhaService).solicitarRecuperacao("cliente@example.com");
+
+        ResponseEntity<Map<String, String>> result =
+                controller.recuperarSenha(new AuthController.EmailRequest("cliente@example.com"));
+
+        assertEquals(503, result.getStatusCode().value());
+        assertEquals(
+                "Não foi possível enviar o e-mail de recuperação agora. Tente novamente mais tarde.",
+                result.getBody().get("erro"));
     }
 }

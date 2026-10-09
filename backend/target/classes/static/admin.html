@@ -9,6 +9,7 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="css/style.css">
+	<link rel="icon" type="image/svg+xml" href="img/favicon.svg">
 	<script src="javascript/sessao.js" defer></script>
 	<script src="javascript/admin.js" defer></script>
 </head>
@@ -20,13 +21,15 @@
 	</header>
 
 	<main class="admin-main">
-		<section class="hidden" id="admin-dashboard">
+		<section class="admin-dashboard hidden" id="admin-dashboard">
 			<h1>Visão geral</h1>
 			<p class="admin-lead">Acompanhe os pedidos, o cardápio e as vendas da casa.</p>
 			<p class="form-feedback hidden" id="admin-data-error" role="alert"></p>
-			<button class="button button-dark button-small" id="refresh-dashboard" type="button">Atualizar pedidos e clientes</button>
-			<button class="button button-red button-small" id="clear-orders" type="button">Zerar todos os pedidos</button>
-			<button class="button button-dark button-small" id="print-daily-report" type="button">Imprimir relatório do dia</button>
+			<div class="admin-actions">
+				<button class="button button-dark button-small" id="refresh-dashboard" type="button">Atualizar pedidos e clientes</button>
+				<button class="button button-red button-small" id="clear-orders" type="button">Zerar todos os pedidos</button>
+				<button class="button button-dark button-small" id="print-daily-report" type="button">Imprimir relatório do dia</button>
+			</div>
 			<div class="admin-stats">
 				<article class="stat-card"><span>Pedidos hoje</span><strong id="stat-orders">0</strong></article>
 				<article class="stat-card"><span>Vendas hoje</span><strong id="stat-day">R$ 0,00</strong></article>
@@ -49,23 +52,23 @@
 
 				<section class="admin-panel">
 					<h2>Cardápio cadastrado</h2>
-					<div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Item</th><th>Preço</th><th>Ações</th></tr></thead><tbody id="menu-table"></tbody></table></div>
+					<div class="admin-table-wrap"><table class="admin-table admin-table-menu"><thead><tr><th>Item</th><th>Preço</th><th>Ações</th></tr></thead><tbody id="menu-table"></tbody></table></div>
 				</section>
 
 				<section class="admin-panel">
 					<h2>Pedidos</h2>
-					<div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Pedido</th><th>Cliente</th><th>Resumo</th><th>WhatsApp</th><th>Total</th><th>Status</th><th>Ações</th></tr></thead><tbody id="orders-table"></tbody></table></div>
+					<div class="admin-table-wrap"><table class="admin-table admin-table-orders"><thead><tr><th>Pedido</th><th>Cliente</th><th>Resumo</th><th>WhatsApp</th><th>Total</th><th>Status</th><th>Ações</th></tr></thead><tbody id="orders-table"></tbody></table></div>
 				</section>
 
 				<section class="admin-panel">
 					<h2>Itens mais pedidos</h2>
 					<p class="admin-lead">Quantidade de itens em pedidos que não foram cancelados.</p>
-					<div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Posição</th><th>Item</th><th>Quantidade pedida</th></tr></thead><tbody id="popular-items-table"></tbody></table></div>
+					<div class="admin-table-wrap"><table class="admin-table admin-table-popular"><thead><tr><th>Posição</th><th>Item</th><th>Quantidade pedida</th></tr></thead><tbody id="popular-items-table"></tbody></table></div>
 				</section>
 
 				<section class="admin-panel">
 					<h2>Clientes cadastrados</h2>
-					<div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Nome</th><th>E-mail</th><th>WhatsApp</th></tr></thead><tbody id="customers-table"></tbody></table></div>
+					<div class="admin-table-wrap"><table class="admin-table admin-table-customers"><thead><tr><th>Nome</th><th>E-mail</th><th>WhatsApp</th></tr></thead><tbody id="customers-table"></tbody></table></div>
 				</section>
 			</div>
 		</section>
