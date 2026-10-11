@@ -18,6 +18,11 @@ const defaults = [
 		const money = (value) => Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 		const read = (key, fallback = []) => JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
 		const store = (key, value) => localStorage.setItem(key, JSON.stringify(value));
+		const apiFetch = (url, options = {}) => fetch(url, { ...options, credentials: 'include' });
+		const redirectToAdminLogin = () => {
+			localStorage.removeItem('pizzaburguer-session');
+			window.location.assign('login.html?redirect=admin.html&sessao=expirada');
+		};
 		const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({
 			'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
 		})[character]);
@@ -81,9 +86,13 @@ const defaults = [
 			refreshingDashboard = true;
 			try {
 				const [ordersResponse, customersResponse] = await Promise.all([
-					fetch('/api/admin/pedidos'),
-					fetch('/api/admin/clientes')
+					apiFetch('/api/admin/pedidos'),
+					apiFetch('/api/admin/clientes')
 				]);
+				if (ordersResponse.status === 401 || customersResponse.status === 401) {
+					redirectToAdminLogin();
+					return;
+				}
 				if (ordersResponse.status === 403 || customersResponse.status === 403) {
 					throw new Error('Sua sessão não está autorizada como administradora. Saia da conta e entre novamente com o usuário administrador.');
 				}
@@ -152,11 +161,15 @@ const defaults = [
 			const select = event.target.closest('[data-status]');
 			if (!select) return;
 			const previousStatus = apiOrders.find((order) => String(order.id) === select.dataset.status)?.status;
-			fetch(`/api/admin/pedidos/${encodeURIComponent(select.dataset.status)}/status`, {
+			apiFetch(`/api/admin/pedidos/${encodeURIComponent(select.dataset.status)}/status`, {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ status: select.value })
 			}).then(async (response) => {
+				if (response.status === 401) {
+					redirectToAdminLogin();
+					return;
+				}
 				if (!response.ok) {
 					const result = await response.json().catch(() => ({}));
 					throw new Error(result.message || `Não foi possível atualizar o status (HTTP ${response.status}).`);
@@ -184,7 +197,11 @@ const defaults = [
 			const button = event.currentTarget;
 			button.disabled = true;
 			try {
-				const response = await fetch('/api/admin/pedidos', { method: 'DELETE' });
+				const response = await apiFetch('/api/admin/pedidos', { method: 'DELETE' });
+				if (response.status === 401) {
+					redirectToAdminLogin();
+					return;
+				}
 				if (response.status === 403) {
 					throw new Error('Sua sessão não está autorizada como administradora. Saia da conta e entre novamente com o usuário administrador.');
 				}
