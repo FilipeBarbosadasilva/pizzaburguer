@@ -16,6 +16,7 @@ WORKDIR /app/frontend
 COPY frontend/package*.json ./
 RUN npm install
 COPY frontend/ ./
+COPY frontend /frontend
 RUN npm run build
 
 # Estágio 2: Build do Backend (Java Maven)
