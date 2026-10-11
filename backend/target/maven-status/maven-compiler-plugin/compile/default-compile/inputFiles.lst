@@ -14,5 +14,6 @@ D:\Pizzaburguer\backend\src\main\java\com\pizzaburguer\repository\PizzaRepositor
 D:\Pizzaburguer\backend\src\main\java\com\pizzaburguer\repository\TokenRecuperacaoRepository.java
 D:\Pizzaburguer\backend\src\main\java\com\pizzaburguer\repository\UsuarioRepository.java
 D:\Pizzaburguer\backend\src\main\java\com\pizzaburguer\service\CardapioService.java
+D:\Pizzaburguer\backend\src\main\java\com\pizzaburguer\service\RecuperacaoSenhaRateLimiter.java
 D:\Pizzaburguer\backend\src\main\java\com\pizzaburguer\service\RecuperacaoSenhaService.java
 D:\Pizzaburguer\backend\src\main\java\com\pizzaburguer\service\UsuarioService.java
