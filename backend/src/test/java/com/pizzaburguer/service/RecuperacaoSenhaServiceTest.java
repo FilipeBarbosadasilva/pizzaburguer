@@ -15,7 +15,11 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.util.HexFormat;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -53,14 +57,20 @@ class RecuperacaoSenhaServiceTest {
         assertEquals(usuario, token.getUsuario());
         assertFalse(token.isUsado());
         assertTrue(token.getExpiraEm().isAfter(LocalDateTime.now()));
-        assertTrue(token.getExpiraEm().isBefore(LocalDateTime.now().plusMinutes(31)));
+        assertTrue(token.getExpiraEm().isBefore(LocalDateTime.now().plusMinutes(16)));
+        assertTrue(token.getToken().matches("[a-f0-9]{64}"));
 
         ArgumentCaptor<SimpleMailMessage> mailCaptor = ArgumentCaptor.forClass(SimpleMailMessage.class);
         verify(mailSender).send(mailCaptor.capture());
         assertNotNull(mailCaptor.getValue().getTo());
         assertEquals("cliente@example.com", mailCaptor.getValue().getTo()[0]);
         assertNotNull(mailCaptor.getValue().getText());
-        assertTrue(mailCaptor.getValue().getText().contains("/login.html?token=" + token.getToken()));
+        assertTrue(mailCaptor.getValue().getText().contains("/redefinir-senha.html?token="));
+        String rawToken = mailCaptor.getValue().getText().split("\\?token=")[1].trim();
+        assertNotEquals(token.getToken(), rawToken);
+
+        when(tokenRepository.findByTokenForUpdate(token.getToken())).thenReturn(Optional.of(token));
+        assertTrue(service.redefinirSenha(rawToken, "new-password"));
     }
 
     @Test
@@ -69,15 +79,16 @@ class RecuperacaoSenhaServiceTest {
         usuario.setSenha("old-password-hash");
         TokenRecuperacao token = new TokenRecuperacao();
         token.setUsuario(usuario);
-        token.setToken("valid-token");
+        token.setToken(hash("valid-token"));
         token.setExpiraEm(LocalDateTime.now().plusMinutes(10));
-        when(tokenRepository.findByTokenForUpdate("valid-token")).thenReturn(Optional.of(token));
+        when(tokenRepository.findByTokenForUpdate(hash("valid-token"))).thenReturn(Optional.of(token));
         when(usuarioRepository.save(any(Usuario.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         assertTrue(service.redefinirSenha("valid-token", "new-password"));
 
         assertTrue(passwordEncoder.matches("new-password", usuario.getSenha()));
         assertTrue(token.isUsado());
+        assertFalse(service.redefinirSenha("valid-token", "another-password"));
         verify(usuarioRepository).save(usuario);
         verify(tokenRepository).save(token);
     }
@@ -85,9 +96,9 @@ class RecuperacaoSenhaServiceTest {
     @Test
     void refusesExpiredOrConsumedTokens() {
         TokenRecuperacao token = new TokenRecuperacao();
-        token.setToken("expired-token");
+        token.setToken(hash("expired-token"));
         token.setExpiraEm(LocalDateTime.now().minusSeconds(1));
-        when(tokenRepository.findByTokenForUpdate("expired-token")).thenReturn(Optional.of(token));
+        when(tokenRepository.findByTokenForUpdate(hash("expired-token"))).thenReturn(Optional.of(token));
 
         assertFalse(service.redefinirSenha("expired-token", "new-password"));
         verify(usuarioRepository, never()).save(any());
@@ -104,5 +115,14 @@ class RecuperacaoSenhaServiceTest {
         assertThrows(MailSendException.class, () -> service.solicitarRecuperacao(usuario.getEmail()));
 
         verify(tokenRepository).delete(any(TokenRecuperacao.class));
+    }
+
+    private static String hash(String token) {
+        try {
+            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
+                    .digest(token.getBytes(StandardCharsets.UTF_8)));
+        } catch (NoSuchAlgorithmException exception) {
+            throw new AssertionError(exception);
+        }
     }
 }

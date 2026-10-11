@@ -14,13 +14,19 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.Base64;
+import java.util.HexFormat;
 
 @Service
 public class RecuperacaoSenhaService {
     private static final Logger logger = LoggerFactory.getLogger(RecuperacaoSenhaService.class);
-    private static final int TOKEN_VALIDITY_MINUTES = 30;
+    private static final int TOKEN_VALIDITY_MINUTES = 15;
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     private final UsuarioRepository usuarioRepository;
     private final TokenRecuperacaoRepository tokenRepository;
@@ -50,7 +56,7 @@ public class RecuperacaoSenhaService {
 
     @Transactional
     public boolean redefinirSenha(String tokenValue, String novaSenha) {
-        TokenRecuperacao token = tokenRepository.findByTokenForUpdate(tokenValue).orElse(null);
+        TokenRecuperacao token = tokenRepository.findByTokenForUpdate(hashToken(tokenValue)).orElse(null);
         if (token == null || token.isUsado() || !LocalDateTime.now().isBefore(token.getExpiraEm())) {
             return false;
         }
@@ -66,9 +72,13 @@ public class RecuperacaoSenhaService {
     private void enviarLink(Usuario usuario, String email) {
         tokenRepository.deleteAllByUsuario(usuario);
 
+        byte[] tokenBytes = new byte[32];
+        SECURE_RANDOM.nextBytes(tokenBytes);
+        String rawToken = Base64.getUrlEncoder().withoutPadding().encodeToString(tokenBytes);
+
         TokenRecuperacao token = new TokenRecuperacao();
         token.setUsuario(usuario);
-        token.setToken(UUID.randomUUID().toString());
+        token.setToken(hashToken(rawToken));
         token.setExpiraEm(LocalDateTime.now().plusMinutes(TOKEN_VALIDITY_MINUTES));
         token.setUsado(false);
         tokenRepository.save(token);
@@ -77,15 +87,26 @@ public class RecuperacaoSenhaService {
         message.setFrom(mailFrom);
         message.setTo(email);
         message.setSubject("Recuperação de senha - Pizzaburguer");
-        message.setText("Use este link para criar uma nova senha (válido por 30 minutos):\n"
-                + frontendBaseUrl + "/login.html?token=" + token.getToken());
+        message.setText("Use este link para criar uma nova senha (válido por 15 minutos):\n"
+                + frontendBaseUrl + "/redefinir-senha.html?token=" + rawToken);
 
         try {
             mailSender.send(message);
         } catch (MailException exception) {
             tokenRepository.delete(token);
-            logger.error("Não foi possível enviar o e-mail de recuperação para a conta solicitada.", exception);
+            logger.error("Não foi possível entregar o e-mail de recuperação: {}",
+                    exception.getClass().getSimpleName());
             throw exception;
+        }
+    }
+
+    private static String hashToken(String token) {
+        try {
+            byte[] hash = MessageDigest.getInstance("SHA-256")
+                    .digest(token.getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(hash);
+        } catch (NoSuchAlgorithmException exception) {
+            throw new IllegalStateException("SHA-256 não está disponível.", exception);
         }
     }
 }

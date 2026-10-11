@@ -1,10 +1,10 @@
 package com.pizzaburguer.controller;
 
 import com.pizzaburguer.model.Usuario;
+import com.pizzaburguer.service.RecuperacaoSenhaRateLimiter;
 import com.pizzaburguer.service.RecuperacaoSenhaService;
 import com.pizzaburguer.service.UsuarioService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,14 +29,17 @@ import org.springframework.security.web.context.SecurityContextRepository;
 public class AuthController {
     private final UsuarioService usuarioService;
     private final RecuperacaoSenhaService recuperacaoSenhaService;
+    private final RecuperacaoSenhaRateLimiter recuperacaoSenhaRateLimiter;
     private final SecurityContextRepository securityContextRepository;
 
     public AuthController(
             UsuarioService usuarioService,
             RecuperacaoSenhaService recuperacaoSenhaService,
+            RecuperacaoSenhaRateLimiter recuperacaoSenhaRateLimiter,
             SecurityContextRepository securityContextRepository) {
         this.usuarioService = usuarioService;
         this.recuperacaoSenhaService = recuperacaoSenhaService;
+        this.recuperacaoSenhaRateLimiter = recuperacaoSenhaRateLimiter;
         this.securityContextRepository = securityContextRepository;
     }
 
@@ -92,15 +95,19 @@ public class AuthController {
     }
 
     @PostMapping("/recuperar-senha")
-    public ResponseEntity<Map<String, String>> recuperarSenha(@Valid @RequestBody EmailRequest request) {
+    public ResponseEntity<Map<String, String>> recuperarSenha(
+            @Valid @RequestBody EmailRequest request,
+            HttpServletRequest httpRequest) {
+        String email = request.email().trim().toLowerCase();
         try {
-            recuperacaoSenhaService.solicitarRecuperacao(request.email().trim().toLowerCase());
-            return ResponseEntity.ok(Map.of(
-                    "mensagem", "Se o e-mail estiver cadastrado, enviamos um link de recuperação"));
+            if (recuperacaoSenhaRateLimiter.podeSolicitar(httpRequest.getRemoteAddr(), email)) {
+                recuperacaoSenhaService.solicitarRecuperacao(email);
+            }
         } catch (MailException exception) {
-            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(Map.of(
-                    "erro", "Não foi possível enviar o e-mail de recuperação agora. Tente novamente mais tarde."));
+            // The service logs the delivery failure; keep the response generic to prevent enumeration.
         }
+        return ResponseEntity.ok(Map.of(
+                "mensagem", "Se o e-mail estiver cadastrado, enviaremos um link de recuperação."));
     }
 
     @PostMapping("/redefinir-senha")
@@ -131,6 +138,6 @@ public class AuthController {
             @NotBlank @Size(max = 20) @Pattern(regexp = "[+0-9() .-]+") String telefone) {}
 
     public record RedefinirSenhaRequest(
-            @NotBlank String token,
-            @NotBlank @Size(min = 6) String novaSenha) {}
+            @NotBlank @Size(max = 128) String token,
+            @NotBlank @Size(min = 6, max = 100) String novaSenha) {}
 }

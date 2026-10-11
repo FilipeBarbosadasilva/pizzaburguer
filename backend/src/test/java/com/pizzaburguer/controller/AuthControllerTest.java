@@ -2,6 +2,7 @@ package com.pizzaburguer.controller;
 
 import com.pizzaburguer.model.Usuario;
 import com.pizzaburguer.service.RecuperacaoSenhaService;
+import com.pizzaburguer.service.RecuperacaoSenhaRateLimiter;
 import com.pizzaburguer.service.UsuarioService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,13 +28,15 @@ import static org.mockito.Mockito.*;
 class AuthControllerTest {
     @Mock private UsuarioService usuarioService;
     @Mock private RecuperacaoSenhaService recuperacaoSenhaService;
+    @Mock private RecuperacaoSenhaRateLimiter recuperacaoSenhaRateLimiter;
     @Mock private SecurityContextRepository securityContextRepository;
 
     private AuthController controller;
 
     @BeforeEach
     void setUp() {
-        controller = new AuthController(usuarioService, recuperacaoSenhaService, securityContextRepository);
+        controller = new AuthController(
+                usuarioService, recuperacaoSenhaService, recuperacaoSenhaRateLimiter, securityContextRepository);
     }
 
     @Test
@@ -78,16 +81,45 @@ class AuthControllerTest {
     }
 
     @Test
-    void reportsWhenRecoveryEmailCannotBeSent() {
+    void returnsGenericMessageWhenRecoveryEmailCannotBeSent() {
+        when(recuperacaoSenhaRateLimiter.podeSolicitar(anyString(), anyString())).thenReturn(true);
         doThrow(new MailSendException("SMTP unavailable"))
                 .when(recuperacaoSenhaService).solicitarRecuperacao("cliente@example.com");
 
         ResponseEntity<Map<String, String>> result =
-                controller.recuperarSenha(new AuthController.EmailRequest("cliente@example.com"));
+                controller.recuperarSenha(
+                        new AuthController.EmailRequest("cliente@example.com"), new MockHttpServletRequest());
 
-        assertEquals(503, result.getStatusCode().value());
-        assertEquals(
-                "Não foi possível enviar o e-mail de recuperação agora. Tente novamente mais tarde.",
-                result.getBody().get("erro"));
+        assertEquals(200, result.getStatusCode().value());
+        assertEquals("Se o e-mail estiver cadastrado, enviaremos um link de recuperação.",
+                result.getBody().get("mensagem"));
+    }
+
+    @Test
+    void returnsGenericMessageForUnknownEmail() {
+        when(recuperacaoSenhaRateLimiter.podeSolicitar(anyString(), anyString())).thenReturn(true);
+
+        ResponseEntity<Map<String, String>> result =
+                controller.recuperarSenha(
+                        new AuthController.EmailRequest("cliente@example.com"), new MockHttpServletRequest());
+
+        assertEquals(200, result.getStatusCode().value());
+        assertEquals("Se o e-mail estiver cadastrado, enviaremos um link de recuperação.",
+                result.getBody().get("mensagem"));
+        verify(recuperacaoSenhaService).solicitarRecuperacao("cliente@example.com");
+    }
+
+    @Test
+    void returnsTheSameMessageWhenTheRequestIsRateLimited() {
+        when(recuperacaoSenhaRateLimiter.podeSolicitar(anyString(), anyString())).thenReturn(false);
+
+        ResponseEntity<Map<String, String>> result =
+                controller.recuperarSenha(
+                        new AuthController.EmailRequest("cliente@example.com"), new MockHttpServletRequest());
+
+        assertEquals(200, result.getStatusCode().value());
+        assertEquals("Se o e-mail estiver cadastrado, enviaremos um link de recuperação.",
+                result.getBody().get("mensagem"));
+        verifyNoInteractions(recuperacaoSenhaService);
     }
 }

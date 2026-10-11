@@ -15,6 +15,6 @@ WORKDIR /app
 
 COPY --from=backend-build /app/backend/target/*.jar app.jar
 
-EXPOSE 8080
+EXPOSE 8081
 
 CMD ["java", "-jar", "app.jar"]
