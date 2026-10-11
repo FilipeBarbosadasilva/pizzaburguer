@@ -66,6 +66,11 @@
 			feedback.textContent = 'Senha alterada com sucesso. Faça seu login.';
 			feedback.classList.remove('hidden');
 		}
+		if (new URLSearchParams(window.location.search).get('sessao') === 'expirada') {
+			const feedback = document.querySelector('#login-feedback');
+			feedback.textContent = 'Sua sessão expirou. Entre novamente para continuar.';
+			feedback.classList.remove('hidden');
+		}
 		const panels = document.querySelectorAll('.form-panel');
 		const showPanel = (panelId) => {
 			panels.forEach((panel) => panel.classList.toggle('hidden', panel.id !== panelId));
