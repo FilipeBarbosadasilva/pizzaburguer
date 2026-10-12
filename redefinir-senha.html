@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="pt-BR">
+
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,18 +9,26 @@
 	<title>Redefinir senha | Pizzaburguer</title>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&display=swap" rel="stylesheet">
+	<link
+		href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&display=swap"
+		rel="stylesheet">
 	<link rel="stylesheet" href="css/style.css">
 	<link rel="icon" type="image/svg+xml" href="img/favicon.svg">
 	<script src="javascript/sessao.js" defer></script>
 	<script src="javascript/redefinir-senha.js" defer></script>
 </head>
+
 <body>
 	<header class="site-header">
-		<a class="brand" href="index.html" aria-label="Pizzaburguer, início"><span class="brand-mark" aria-hidden="true">P</span><span>Pizzaburguer</span></a>
-		<nav class="main-nav" aria-label="Navegação principal"><a href="index.html">Início</a><a href="cardapio.html">Cardápio</a><a href="sobre.html">Sobre</a></nav>
-		<div class="header-actions"><a class="header-login" href="login.html">Entrar</a><a class="button button-small button-dark" href="pedido.html"><span aria-hidden="true">▣</span> Meu pedido <span class="cart-count" data-cart-count>0</span></a></div>
-		<button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false"><span></span><span></span></button>
+		<a class="brand" href="index.html" aria-label="Pizzaburguer, início"><span class="brand-mark"
+				aria-hidden="true">P</span><span>Pizzaburguer</span></a>
+		<nav class="main-nav" aria-label="Navegação principal"><a href="index.html">Início</a><a
+				href="cardapio.html">Cardápio</a><a href="sobre.html">Sobre</a></nav>
+		<div class="header-actions"><a class="header-login" href="login.html">Entrar</a><a
+				class="button button-small button-dark" href="pedido.html"><span aria-hidden="true">▣</span> Meu pedido
+				<span class="cart-count" data-cart-count>0</span></a></div>
+		<button class="menu-toggle" type="button" aria-label="Abrir menu"
+			aria-expanded="false"><span></span><span></span></button>
 	</header>
 	<main class="account-layout">
 		<section class="form-panel">
@@ -29,11 +38,13 @@
 			<form id="reset-form">
 				<div class="form-field">
 					<label class="field-label" for="reset-password">Nova senha</label>
-					<input class="text-field" id="reset-password" name="password" type="password" autocomplete="new-password" minlength="6" maxlength="100" required>
+					<input class="text-field" id="reset-password" name="password" type="password"
+						autocomplete="new-password" minlength="6" maxlength="100" required>
 				</div>
 				<div class="form-field">
 					<label class="field-label" for="reset-confirm-password">Confirmar senha</label>
-					<input class="text-field" id="reset-confirm-password" name="confirmPassword" type="password" autocomplete="new-password" minlength="6" maxlength="100" required>
+					<input class="text-field" id="reset-confirm-password" name="confirmPassword" type="password"
+						autocomplete="new-password" minlength="6" maxlength="100" required>
 				</div>
 				<button class="button button-red" type="submit">Alterar senha <span aria-hidden="true">→</span></button>
 				<p class="form-feedback hidden" id="reset-feedback" role="status" aria-live="polite"></p>
@@ -41,6 +52,12 @@
 			<p class="form-switch"><a class="inline-link" href="login.html">Voltar ao login</a></p>
 		</section>
 	</main>
-	<footer class="site-footer"><a class="brand brand-footer" href="index.html"><span class="brand-mark" aria-hidden="true">P</span><span>Pizzaburguer</span></a><p>Feita com calma. Entregue com carinho.</p><div class="footer-links"><a href="cardapio.html">Cardápio</a><a href="sobre.html">Contato</a><a href="admin.html">Admin</a></div><small>© 2026 Pizzaburguer. Todos os direitos reservados.</small></footer>
+	<footer class="site-footer"><a class="brand brand-footer" href="index.html"><span class="brand-mark"
+				aria-hidden="true">P</span><span>Pizzaburguer</span></a>
+		<p>Feita com calma. Entregue com carinho.</p>
+		<div class="footer-links"><a href="cardapio.html">Cardápio</a><a href="sobre.html">Contato</a><a
+				href="index.html">Início</a></div><small>© 2026 Pizzaburguer. Todos os direitos reservados.</small>
+	</footer>
 </body>
+
 </html>

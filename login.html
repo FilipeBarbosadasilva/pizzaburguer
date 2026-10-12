@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="pt-BR">
+
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,34 +8,185 @@
 	<title>Entrar ou cadastrar | Pizzaburguer</title>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&display=swap" rel="stylesheet">
+	<link
+		href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&display=swap"
+		rel="stylesheet">
 	<link rel="stylesheet" href="css/style.css">
 	<link rel="icon" type="image/svg+xml" href="img/favicon.svg">
-	
+
 	<script src="javascript/sessao.js" defer></script>
 	<style>
-		body { background: #fffefa; }
-		.app-loader { position: fixed; inset: 0; z-index: 9999; display: grid; place-items: center; background: linear-gradient(135deg, #fff9f5 0%, #fdf3ef 35%, #fffefa 100%); transition: opacity .38s ease, visibility .38s ease; }
-		.app-loader.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-		.app-loader-shell { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: clamp(24px, 4vw, 52px); border-radius: 26px; background: rgba(255,255,255,.78); border: 1px solid rgba(37,39,35,.06); box-shadow: 0 30px 70px rgba(30,22,19,.12); backdrop-filter: blur(8px); text-align: center; }
-		.app-loader-brand { width: 92px; height: 92px; display: grid; place-items: center; border-radius: 50% 50% 48% 50%; background: linear-gradient(135deg, #c73523, #db574d); color: white; font-family: "Fraunces", Georgia, serif; font-size: clamp(2.3rem, 4vw, 3.1rem); font-weight: 800; transform: rotate(-10deg); box-shadow: 0 20px 35px rgba(199,53,35,.28); position: relative; }
-		.app-loader-brand::after { content: ""; position: absolute; inset: 10px; border-radius: 50%; border: 2px solid rgba(255,255,255,.3); }
-		.app-loader-ring { position: relative; width: 108px; height: 108px; display: grid; place-items: center; }
-		.app-loader-ring::before, .app-loader-ring::after { content: ""; position: absolute; inset: 0; border-radius: 50%; }
-		.app-loader-ring::before { border: 4px solid rgba(199,53,35,.14); }
-		.app-loader-ring::after { border: 4px solid transparent; border-top-color: #c73523; border-right-color: #f3c449; animation: splash-spin .7s linear infinite; }
-		.app-loader-dot { width: 18px; height: 18px; border-radius: 50%; background: linear-gradient(135deg, #f3c449, #f7db8a); box-shadow: 0 0 20px rgba(243,196,73,.8); }
-		.app-loader-title { margin: 0; font-size: clamp(2rem, 4vw, 2.8rem); line-height: 1; font-family: "Fraunces", Georgia, serif; }
-		.app-loader-copy { margin: -4px 0 0; color: rgba(37,39,35,.74); font-size: clamp(.96rem, 2.2vw, 1.08rem); }
-		.app-loader-bar { width: min(260px, 68vw); height: 8px; border-radius: 999px; background: rgba(37,39,35,.08); overflow: hidden; position: relative; }
-		.app-loader-fill { position: absolute; inset: 0 auto 0 0; width: 100%; border-radius: inherit; background: linear-gradient(90deg, #c73523, #f3c449); transform-origin: left center; animation: splash-progress .4s ease-in-out both; }
-		.app-shell { opacity: 0; visibility: hidden; transition: opacity .3s ease, visibility .3s ease; }
-		body.is-ready .app-shell { opacity: 1; visibility: visible; }
-		@keyframes splash-spin { to { transform: rotate(360deg); } }
-		@keyframes splash-progress { from { transform: scaleX(.15); } to { transform: scaleX(1); } }
-		@media (max-width: 480px) { .app-loader-shell { width: min(88vw, 420px); border-radius: 22px; } .app-loader-brand { width: 72px; height: 72px; } .app-loader-ring { width: 90px; height: 90px; } }
+		body {
+			background: #fffefa;
+		}
+
+		.app-loader {
+			position: fixed;
+			inset: 0;
+			z-index: 9999;
+			display: grid;
+			place-items: center;
+			background: linear-gradient(135deg, #fff9f5 0%, #fdf3ef 35%, #fffefa 100%);
+			transition: opacity .38s ease, visibility .38s ease;
+		}
+
+		.app-loader.is-hidden {
+			opacity: 0;
+			visibility: hidden;
+			pointer-events: none;
+		}
+
+		.app-loader-shell {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 16px;
+			padding: clamp(24px, 4vw, 52px);
+			border-radius: 26px;
+			background: rgba(255, 255, 255, .78);
+			border: 1px solid rgba(37, 39, 35, .06);
+			box-shadow: 0 30px 70px rgba(30, 22, 19, .12);
+			backdrop-filter: blur(8px);
+			text-align: center;
+		}
+
+		.app-loader-brand {
+			width: 92px;
+			height: 92px;
+			display: grid;
+			place-items: center;
+			border-radius: 50% 50% 48% 50%;
+			background: linear-gradient(135deg, #c73523, #db574d);
+			color: white;
+			font-family: "Fraunces", Georgia, serif;
+			font-size: clamp(2.3rem, 4vw, 3.1rem);
+			font-weight: 800;
+			transform: rotate(-10deg);
+			box-shadow: 0 20px 35px rgba(199, 53, 35, .28);
+			position: relative;
+		}
+
+		.app-loader-brand::after {
+			content: "";
+			position: absolute;
+			inset: 10px;
+			border-radius: 50%;
+			border: 2px solid rgba(255, 255, 255, .3);
+		}
+
+		.app-loader-ring {
+			position: relative;
+			width: 108px;
+			height: 108px;
+			display: grid;
+			place-items: center;
+		}
+
+		.app-loader-ring::before,
+		.app-loader-ring::after {
+			content: "";
+			position: absolute;
+			inset: 0;
+			border-radius: 50%;
+		}
+
+		.app-loader-ring::before {
+			border: 4px solid rgba(199, 53, 35, .14);
+		}
+
+		.app-loader-ring::after {
+			border: 4px solid transparent;
+			border-top-color: #c73523;
+			border-right-color: #f3c449;
+			animation: splash-spin .7s linear infinite;
+		}
+
+		.app-loader-dot {
+			width: 18px;
+			height: 18px;
+			border-radius: 50%;
+			background: linear-gradient(135deg, #f3c449, #f7db8a);
+			box-shadow: 0 0 20px rgba(243, 196, 73, .8);
+		}
+
+		.app-loader-title {
+			margin: 0;
+			font-size: clamp(2rem, 4vw, 2.8rem);
+			line-height: 1;
+			font-family: "Fraunces", Georgia, serif;
+		}
+
+		.app-loader-copy {
+			margin: -4px 0 0;
+			color: rgba(37, 39, 35, .74);
+			font-size: clamp(.96rem, 2.2vw, 1.08rem);
+		}
+
+		.app-loader-bar {
+			width: min(260px, 68vw);
+			height: 8px;
+			border-radius: 999px;
+			background: rgba(37, 39, 35, .08);
+			overflow: hidden;
+			position: relative;
+		}
+
+		.app-loader-fill {
+			position: absolute;
+			inset: 0 auto 0 0;
+			width: 100%;
+			border-radius: inherit;
+			background: linear-gradient(90deg, #c73523, #f3c449);
+			transform-origin: left center;
+			animation: splash-progress .4s ease-in-out both;
+		}
+
+		.app-shell {
+			opacity: 0;
+			visibility: hidden;
+			transition: opacity .3s ease, visibility .3s ease;
+		}
+
+		body.is-ready .app-shell {
+			opacity: 1;
+			visibility: visible;
+		}
+
+		@keyframes splash-spin {
+			to {
+				transform: rotate(360deg);
+			}
+		}
+
+		@keyframes splash-progress {
+			from {
+				transform: scaleX(.15);
+			}
+
+			to {
+				transform: scaleX(1);
+			}
+		}
+
+		@media (max-width: 480px) {
+			.app-loader-shell {
+				width: min(88vw, 420px);
+				border-radius: 22px;
+			}
+
+			.app-loader-brand {
+				width: 72px;
+				height: 72px;
+			}
+
+			.app-loader-ring {
+				width: 90px;
+				height: 90px;
+			}
+		}
 	</style>
 </head>
+
 <body>
 	<div class="app-loader" id="app-loader" aria-live="polite" aria-label="Carregando a aplicação">
 		<div class="app-loader-shell">
@@ -46,157 +198,231 @@
 		</div>
 	</div>
 	<div class="app-shell">
-	<header class="site-header">
-		<a class="brand" href="index.html" aria-label="Pizzaburguer, início"><span class="brand-mark" aria-hidden="true">P</span><span>Pizzaburguer</span></a>
-		<nav class="main-nav" aria-label="Navegação principal"><a href="index.html">Início</a><a href="cardapio.html">Cardápio</a><a href="sobre.html">Sobre</a></nav>
-		<div class="header-actions"><a class="header-login" href="login.html">Entrar</a><a class="button button-small button-dark" href="pedido.html"><span aria-hidden="true">▣</span> Meu pedido <span class="cart-count" data-cart-count>0</span></a></div>
-		<button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false"><span></span><span></span></button>
-	</header>
-	<main class="account-layout">
-		<section class="form-panel" id="login-panel"><p class="eyebrow">Que bom ter você por aqui</p><h1>Entre na sua conta.</h1><p>Acompanhe seus pedidos e peça de novo sem complicação.</p><form id="login-form"><div class="form-field"><label class="field-label" for="login-email">E-mail</label><input class="text-field" id="login-email" name="email" type="email" autocomplete="email" required></div><div class="form-field"><label class="field-label" for="login-password">Senha</label><input class="text-field" id="login-password" name="password" type="password" autocomplete="current-password" required></div><button class="button button-red" type="submit">Entrar <span aria-hidden="true">→</span></button><p class="form-feedback hidden" id="login-feedback" role="status"></p></form><p class="form-switch"><a class="inline-link" href="recuperar-senha.html">Esqueci minha senha</a></p><p class="form-switch">Ainda não tem cadastro? <button type="button" data-show="register-panel">Criar conta</button></p></section>
-		<section class="form-panel hidden" id="register-panel"><p class="eyebrow">Primeiro pedido por nossa conta</p><h1>Vamos nos conhecer.</h1><p>Crie seu cadastro para agilizar seus próximos pedidos.</p><form id="register-form"><div class="form-field"><label class="field-label" for="register-name">Nome</label><input class="text-field" id="register-name" name="name" autocomplete="name" required></div><div class="form-field"><label class="field-label" for="register-email">E-mail</label><input class="text-field" id="register-email" name="email" type="email" autocomplete="email" required></div><div class="form-field"><label class="field-label" for="register-phone">WhatsApp</label><input class="text-field" id="register-phone" name="phone" type="tel" autocomplete="tel" placeholder="(11) 99999-9999" maxlength="20" required></div><div class="form-field"><label class="field-label" for="register-password">Senha</label><input class="text-field" id="register-password" name="password" type="password" autocomplete="new-password" minlength="6" required></div><button class="button button-red" type="submit">Criar cadastro <span aria-hidden="true">→</span></button><p class="form-feedback hidden" id="register-feedback" role="status"></p></form><p class="form-switch">Já tem cadastro? <button type="button" data-show="login-panel">Entrar</button></p></section>
-		<section class="form-panel hidden" id="recovery-panel"><p class="eyebrow">Acontece</p><h1>Recupere seu acesso.</h1><p>Informe o e-mail usado no cadastro para receber as instruções.</p><form id="recovery-form"><div class="form-field"><label class="field-label" for="recovery-email">E-mail</label><input class="text-field" id="recovery-email" name="email" type="email" autocomplete="email" required></div><button class="button button-red" type="submit">Enviar instruções <span aria-hidden="true">→</span></button><p class="form-feedback hidden" id="recovery-feedback" role="status"></p></form><p class="form-switch"><button type="button" data-show="login-panel">Voltar ao login</button></p></section>
-		<section class="form-panel hidden" id="reset-panel"><p class="eyebrow">Quase lá</p><h1>Crie uma nova senha.</h1><p>Escolha uma senha com pelo menos 6 caracteres.</p><form id="reset-form"><div class="form-field"><label class="field-label" for="reset-password">Nova senha</label><input class="text-field" id="reset-password" name="password" type="password" autocomplete="new-password" minlength="6" required></div><div class="form-field"><label class="field-label" for="reset-confirm-password">Confirmar senha</label><input class="text-field" id="reset-confirm-password" name="confirmPassword" type="password" autocomplete="new-password" minlength="6" required></div><button class="button button-red" type="submit">Alterar senha <span aria-hidden="true">→</span></button><p class="form-feedback hidden" id="reset-feedback" role="status"></p></form></section>
-	</main>
-	<footer class="site-footer"><a class="brand brand-footer" href="index.html"><span class="brand-mark" aria-hidden="true">P</span><span>Pizzaburguer</span></a><p>Feita com calma. Entregue com carinho.</p><div class="footer-links"><a href="cardapio.html">Cardápio</a><a href="sobre.html">Contato</a><a href="admin.html">Admin</a></div><small>© 2026 Pizzaburguer. Todos os direitos reservados.</small></footer>
-	<script>
-		const apiBase = '/api';
-		if (new URLSearchParams(window.location.search).get('senhaAtualizada') === '1') {
-			const feedback = document.querySelector('#login-feedback');
-			feedback.textContent = 'Senha alterada com sucesso. Faça seu login.';
-			feedback.classList.remove('hidden');
-		}
-		if (new URLSearchParams(window.location.search).get('sessao') === 'expirada') {
-			const feedback = document.querySelector('#login-feedback');
-			feedback.textContent = 'Sua sessão expirou. Entre novamente para continuar.';
-			feedback.classList.remove('hidden');
-		}
-		const panels = document.querySelectorAll('.form-panel');
-		const showPanel = (panelId) => {
-			panels.forEach((panel) => panel.classList.toggle('hidden', panel.id !== panelId));
-		};
-		document.querySelectorAll('[data-show]').forEach((button) => button.addEventListener('click', () => {
-			showPanel(button.dataset.show);
-		}));
-		document.querySelector('#register-form').addEventListener('submit', async (event) => {
-			event.preventDefault();
-			const formElement = event.currentTarget;
-			const form = new FormData(formElement);
-			const payload = {
-				nome: String(form.get('name')).trim(),
-				email: String(form.get('email')).trim().toLowerCase(),
-				senha: String(form.get('password')),
-				telefone: String(form.get('phone')).trim()
+		<header class="site-header">
+			<a class="brand" href="index.html" aria-label="Pizzaburguer, início"><span class="brand-mark"
+					aria-hidden="true">P</span><span>Pizzaburguer</span></a>
+			<nav class="main-nav" aria-label="Navegação principal"><a href="index.html">Início</a><a
+					href="cardapio.html">Cardápio</a><a href="sobre.html">Sobre</a></nav>
+			<div class="header-actions"><a class="header-login" href="login.html">Entrar</a><a
+					class="button button-small button-dark" href="pedido.html"><span aria-hidden="true">▣</span> Meu
+					pedido <span class="cart-count" data-cart-count>0</span></a></div>
+			<button class="menu-toggle" type="button" aria-label="Abrir menu"
+				aria-expanded="false"><span></span><span></span></button>
+		</header>
+		<main class="account-layout">
+			<section class="form-panel" id="login-panel">
+				<p class="eyebrow">Que bom ter você por aqui</p>
+				<h1>Entre na sua conta.</h1>
+				<p>Acompanhe seus pedidos e peça de novo sem complicação.</p>
+				<form id="login-form">
+					<div class="form-field"><label class="field-label" for="login-email">E-mail</label><input
+							class="text-field" id="login-email" name="email" type="email" autocomplete="email" required>
+					</div>
+					<div class="form-field"><label class="field-label" for="login-password">Senha</label><input
+							class="text-field" id="login-password" name="password" type="password"
+							autocomplete="current-password" required></div><button class="button button-red"
+						type="submit">Entrar <span aria-hidden="true">→</span></button>
+					<p class="form-feedback hidden" id="login-feedback" role="status"></p>
+				</form>
+				<p class="form-switch"><a class="inline-link" href="recuperar-senha.html">Esqueci minha senha</a></p>
+				<p class="form-switch">Ainda não tem cadastro? <button type="button" data-show="register-panel">Criar
+						conta</button></p>
+			</section>
+			<section class="form-panel hidden" id="register-panel">
+				<p class="eyebrow">Primeiro pedido por nossa conta</p>
+				<h1>Vamos nos conhecer.</h1>
+				<p>Crie seu cadastro para agilizar seus próximos pedidos.</p>
+				<form id="register-form">
+					<div class="form-field"><label class="field-label" for="register-name">Nome</label><input
+							class="text-field" id="register-name" name="name" autocomplete="name" required></div>
+					<div class="form-field"><label class="field-label" for="register-email">E-mail</label><input
+							class="text-field" id="register-email" name="email" type="email" autocomplete="email"
+							required></div>
+					<div class="form-field"><label class="field-label" for="register-phone">WhatsApp</label><input
+							class="text-field" id="register-phone" name="phone" type="tel" autocomplete="tel"
+							placeholder="(11) 99999-9999" maxlength="20" required></div>
+					<div class="form-field"><label class="field-label" for="register-password">Senha</label><input
+							class="text-field" id="register-password" name="password" type="password"
+							autocomplete="new-password" minlength="6" required></div><button class="button button-red"
+						type="submit">Criar cadastro <span aria-hidden="true">→</span></button>
+					<p class="form-feedback hidden" id="register-feedback" role="status"></p>
+				</form>
+				<p class="form-switch">Já tem cadastro? <button type="button" data-show="login-panel">Entrar</button>
+				</p>
+			</section>
+			<section class="form-panel hidden" id="recovery-panel">
+				<p class="eyebrow">Acontece</p>
+				<h1>Recupere seu acesso.</h1>
+				<p>Informe o e-mail usado no cadastro para receber as instruções.</p>
+				<form id="recovery-form">
+					<div class="form-field"><label class="field-label" for="recovery-email">E-mail</label><input
+							class="text-field" id="recovery-email" name="email" type="email" autocomplete="email"
+							required></div><button class="button button-red" type="submit">Enviar instruções <span
+							aria-hidden="true">→</span></button>
+					<p class="form-feedback hidden" id="recovery-feedback" role="status"></p>
+				</form>
+				<p class="form-switch"><button type="button" data-show="login-panel">Voltar ao login</button></p>
+			</section>
+			<section class="form-panel hidden" id="reset-panel">
+				<p class="eyebrow">Quase lá</p>
+				<h1>Crie uma nova senha.</h1>
+				<p>Escolha uma senha com pelo menos 6 caracteres.</p>
+				<form id="reset-form">
+					<div class="form-field"><label class="field-label" for="reset-password">Nova senha</label><input
+							class="text-field" id="reset-password" name="password" type="password"
+							autocomplete="new-password" minlength="6" required></div>
+					<div class="form-field"><label class="field-label" for="reset-confirm-password">Confirmar
+							senha</label><input class="text-field" id="reset-confirm-password" name="confirmPassword"
+							type="password" autocomplete="new-password" minlength="6" required></div><button
+						class="button button-red" type="submit">Alterar senha <span aria-hidden="true">→</span></button>
+					<p class="form-feedback hidden" id="reset-feedback" role="status"></p>
+				</form>
+			</section>
+		</main>
+		<footer class="site-footer"><a class="brand brand-footer" href="index.html"><span class="brand-mark"
+					aria-hidden="true">P</span><span>Pizzaburguer</span></a>
+			<p>Feita com calma. Entregue com carinho.</p>
+			<div class="footer-links"><a href="cardapio.html">Cardápio</a><a href="sobre.html">Contato</a><a
+					href="index.html">Início</a></div><small>© 2026 Pizzaburguer. Todos os direitos reservados.</small>
+		</footer>
+		<script>
+			const apiBase = '/api';
+			if (new URLSearchParams(window.location.search).get('senhaAtualizada') === '1') {
+				const feedback = document.querySelector('#login-feedback');
+				feedback.textContent = 'Senha alterada com sucesso. Faça seu login.';
+				feedback.classList.remove('hidden');
+			}
+			if (new URLSearchParams(window.location.search).get('sessao') === 'expirada') {
+				const feedback = document.querySelector('#login-feedback');
+				feedback.textContent = 'Sua sessão expirou. Entre novamente para continuar.';
+				feedback.classList.remove('hidden');
+			}
+			const panels = document.querySelectorAll('.form-panel');
+			const showPanel = (panelId) => {
+				panels.forEach((panel) => panel.classList.toggle('hidden', panel.id !== panelId));
 			};
-			const feedback = document.querySelector('#register-feedback');
-			try {
-				const response = await fetch(`${apiBase}/cadastro`, {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify(payload)
-				});
-				const result = await response.json();
-				if (!response.ok) throw new Error(result.erro || 'Erro ao cadastrar.');
-				document.querySelector('#login-feedback').textContent = 'Cadastro realizado! Faça seu login.';
-				document.querySelector('#login-feedback').classList.remove('hidden');
-				formElement.reset();
-				showPanel('login-panel');
-			} catch (error) {
-				feedback.textContent = error instanceof Error ? error.message : 'Não foi possível cadastrar agora.';
+			document.querySelectorAll('[data-show]').forEach((button) => button.addEventListener('click', () => {
+				showPanel(button.dataset.show);
+			}));
+			document.querySelector('#register-form').addEventListener('submit', async (event) => {
+				event.preventDefault();
+				const formElement = event.currentTarget;
+				const form = new FormData(formElement);
+				const payload = {
+					nome: String(form.get('name')).trim(),
+					email: String(form.get('email')).trim().toLowerCase(),
+					senha: String(form.get('password')),
+					telefone: String(form.get('phone')).trim()
+				};
+				const feedback = document.querySelector('#register-feedback');
+				try {
+					const response = await fetch(`${apiBase}/cadastro`, {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify(payload)
+					});
+					const result = await response.json();
+					if (!response.ok) throw new Error(result.erro || 'Erro ao cadastrar.');
+					document.querySelector('#login-feedback').textContent = 'Cadastro realizado! Faça seu login.';
+					document.querySelector('#login-feedback').classList.remove('hidden');
+					formElement.reset();
+					showPanel('login-panel');
+				} catch (error) {
+					feedback.textContent = error instanceof Error ? error.message : 'Não foi possível cadastrar agora.';
+					feedback.classList.remove('hidden');
+				}
+			});
+			document.querySelector('#login-form').addEventListener('submit', async (event) => {
+				event.preventDefault();
+				const form = new FormData(event.currentTarget);
+				const payload = {
+					email: String(form.get('email')).trim().toLowerCase(),
+					senha: String(form.get('password'))
+				};
+				const feedback = document.querySelector('#login-feedback');
+				try {
+					const response = await fetch(`${apiBase}/login`, {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify(payload)
+					});
+					const result = await response.json();
+					if (!response.ok) throw new Error(result.erro || 'Credenciais inválidas.');
+					localStorage.setItem('pizzaburguer-session', JSON.stringify({
+						id: result.id,
+						name: result.nome,
+						email: result.email,
+						tipo: result.tipo,
+						telefone: result.telefone
+					}));
+					const redirect = new URLSearchParams(window.location.search).get('redirect');
+					const destination = result.tipo === 'ADMIN'
+						? 'admin.html'
+						: ['pedido.html', 'carrinho.html'].includes(redirect) ? redirect : 'cardapio.html';
+					window.location.assign(destination);
+				} catch (error) {
+					feedback.textContent = error instanceof Error ? error.message : 'E-mail ou senha inválidos.';
+					feedback.classList.remove('hidden');
+				}
+			});
+			document.querySelector('#recovery-form').addEventListener('submit', async (event) => {
+				event.preventDefault();
+				const feedback = document.querySelector('#recovery-feedback');
+				const email = String(new FormData(event.currentTarget).get('email')).trim().toLowerCase();
+				try {
+					const response = await fetch(`${apiBase}/recuperar-senha`, {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ email })
+					});
+					const result = await response.json();
+					if (!response.ok) throw new Error(result.erro || 'Não foi possível solicitar a recuperação.');
+					feedback.textContent = result.mensagem;
+				} catch (error) {
+					feedback.textContent = error instanceof Error ? error.message : 'Não foi possível solicitar a recuperação.';
+				}
 				feedback.classList.remove('hidden');
-			}
-		});
-		document.querySelector('#login-form').addEventListener('submit', async (event) => {
-			event.preventDefault();
-			const form = new FormData(event.currentTarget);
-			const payload = {
-				email: String(form.get('email')).trim().toLowerCase(),
-				senha: String(form.get('password'))
-			};
-			const feedback = document.querySelector('#login-feedback');
-			try {
-				const response = await fetch(`${apiBase}/login`, {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify(payload)
-				});
-				const result = await response.json();
-				if (!response.ok) throw new Error(result.erro || 'Credenciais inválidas.');
-				localStorage.setItem('pizzaburguer-session', JSON.stringify({
-					id: result.id,
-					name: result.nome,
-					email: result.email,
-					tipo: result.tipo,
-					telefone: result.telefone
-				}));
-				const redirect = new URLSearchParams(window.location.search).get('redirect');
-				const destination = result.tipo === 'ADMIN'
-					? 'admin.html'
-					: ['pedido.html', 'carrinho.html'].includes(redirect) ? redirect : 'cardapio.html';
-				window.location.assign(destination);
-			} catch (error) {
-				feedback.textContent = error instanceof Error ? error.message : 'E-mail ou senha inválidos.';
-				feedback.classList.remove('hidden');
-			}
-		});
-		document.querySelector('#recovery-form').addEventListener('submit', async (event) => {
-			event.preventDefault();
-			const feedback = document.querySelector('#recovery-feedback');
-			const email = String(new FormData(event.currentTarget).get('email')).trim().toLowerCase();
-			try {
-				const response = await fetch(`${apiBase}/recuperar-senha`, {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ email })
-				});
-				const result = await response.json();
-				if (!response.ok) throw new Error(result.erro || 'Não foi possível solicitar a recuperação.');
-				feedback.textContent = result.mensagem;
-			} catch (error) {
-				feedback.textContent = error instanceof Error ? error.message : 'Não foi possível solicitar a recuperação.';
-			}
-			feedback.classList.remove('hidden');
-		});
-		const resetToken = new URLSearchParams(window.location.search).get('token');
-		if (resetToken) showPanel('reset-panel');
-		document.querySelector('#reset-form').addEventListener('submit', async (event) => {
-			event.preventDefault();
-			const form = new FormData(event.currentTarget);
-			const password = String(form.get('password'));
-			const confirmPassword = String(form.get('confirmPassword'));
-			const feedback = document.querySelector('#reset-feedback');
-			if (password !== confirmPassword) {
-				feedback.textContent = 'As senhas não coincidem.';
-				feedback.classList.remove('hidden');
-				return;
-			}
-			try {
-				const response = await fetch(`${apiBase}/redefinir-senha`, {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ token: resetToken, novaSenha: password })
-				});
-				const result = await response.json();
-				if (!response.ok) throw new Error(result.erro || 'Não foi possível alterar a senha.');
-				showPanel('login-panel');
-				const loginFeedback = document.querySelector('#login-feedback');
-				loginFeedback.textContent = result.mensagem;
-				loginFeedback.classList.remove('hidden');
-				window.history.replaceState({}, document.title, window.location.pathname);
-			} catch (error) {
-				feedback.textContent = error instanceof Error ? error.message : 'Não foi possível alterar a senha.';
-				feedback.classList.remove('hidden');
-			}
-		});
-		const menuToggle = document.querySelector('.menu-toggle');
-		menuToggle.addEventListener('click', () => {
-			const expanded = menuToggle.getAttribute('aria-expanded') === 'true';
-			menuToggle.setAttribute('aria-expanded', String(!expanded));
-			document.querySelector('.main-nav').classList.toggle('nav-open', !expanded);
-		});
-		const cart = JSON.parse(localStorage.getItem('pizzaburguer-cart') || '[]');
-		document.querySelectorAll('[data-cart-count]').forEach((count) => count.textContent = cart.reduce((sum, item) => sum + item.quantity, 0));
-	</script>
+			});
+			const resetToken = new URLSearchParams(window.location.search).get('token');
+			if (resetToken) showPanel('reset-panel');
+			document.querySelector('#reset-form').addEventListener('submit', async (event) => {
+				event.preventDefault();
+				const form = new FormData(event.currentTarget);
+				const password = String(form.get('password'));
+				const confirmPassword = String(form.get('confirmPassword'));
+				const feedback = document.querySelector('#reset-feedback');
+				if (password !== confirmPassword) {
+					feedback.textContent = 'As senhas não coincidem.';
+					feedback.classList.remove('hidden');
+					return;
+				}
+				try {
+					const response = await fetch(`${apiBase}/redefinir-senha`, {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ token: resetToken, novaSenha: password })
+					});
+					const result = await response.json();
+					if (!response.ok) throw new Error(result.erro || 'Não foi possível alterar a senha.');
+					showPanel('login-panel');
+					const loginFeedback = document.querySelector('#login-feedback');
+					loginFeedback.textContent = result.mensagem;
+					loginFeedback.classList.remove('hidden');
+					window.history.replaceState({}, document.title, window.location.pathname);
+				} catch (error) {
+					feedback.textContent = error instanceof Error ? error.message : 'Não foi possível alterar a senha.';
+					feedback.classList.remove('hidden');
+				}
+			});
+			const menuToggle = document.querySelector('.menu-toggle');
+			menuToggle.addEventListener('click', () => {
+				const expanded = menuToggle.getAttribute('aria-expanded') === 'true';
+				menuToggle.setAttribute('aria-expanded', String(!expanded));
+				document.querySelector('.main-nav').classList.toggle('nav-open', !expanded);
+			});
+			const cart = JSON.parse(localStorage.getItem('pizzaburguer-cart') || '[]');
+			document.querySelectorAll('[data-cart-count]').forEach((count) => count.textContent = cart.reduce((sum, item) => sum + item.quantity, 0));
+		</script>
 	</div>
 	<script>
 		window.addEventListener('load', () => {
@@ -208,4 +434,5 @@
 		});
 	</script>
 </body>
+
 </html>

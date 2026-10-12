@@ -32,7 +32,7 @@ services:
       MYSQL_DATABASE: pizzaburguer_db
       MYSQL_ROOT_PASSWORD: pizzaburguer_dev
     ports:
-      - "3307:3306"
+      - "3307:3307"
     volumes:
       - pizzaburguer-db:/var/lib/mysql
     healthcheck:
