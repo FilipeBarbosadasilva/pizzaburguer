@@ -53,10 +53,13 @@
 			document.querySelector('#stat-month').textContent = money(monthOrders.reduce((sum, order) => sum + Number(order.total), 0));
 			const searchTerm = document.querySelector('#product-search').value.trim().toLocaleLowerCase('pt-BR');
 			const categoryFilter = document.querySelector('#product-filter-category').value;
+			const availabilityFilter = document.querySelector('#product-filter-availability').value;
 			const visibleMenu = menu.filter((item) =>
 				(!searchTerm || item.name.toLocaleLowerCase('pt-BR').includes(searchTerm))
-				&& (!categoryFilter || item.category === categoryFilter));
-			document.querySelector('#menu-table').innerHTML = visibleMenu.length ? visibleMenu.map((item) => `<tr><td><img class="admin-product-thumb" src="${escapeHtml(productImageUrl(item.image))}" alt=""></td><td>${escapeHtml(item.name)}<br><small>${escapeHtml(item.category)}</small></td><td>${money(item.price)}</td><td>${item.available ? 'Disponível' : 'Indisponível'}</td><td><button class="table-action" type="button" data-edit="${escapeHtml(item.id)}">Editar</button> <button class="table-action" type="button" data-toggle-availability="${escapeHtml(item.id)}">${item.available ? 'Desativar' : 'Ativar'}</button></td></tr>`).join('') : `<tr><td colspan="5">${menu.length ? 'Nenhum produto corresponde à busca.' : 'Nenhum item cadastrado.'}</td></tr>`;
+				&& (!categoryFilter || item.category === categoryFilter)
+				&& (availabilityFilter === 'all'
+					|| (availabilityFilter === 'available' ? item.available : !item.available)));
+			document.querySelector('#menu-table').innerHTML = visibleMenu.length ? visibleMenu.map((item) => `<tr><td><img class="admin-product-thumb" src="${escapeHtml(productImageUrl(item.image))}" alt=""></td><td>${escapeHtml(item.name)}<br><small>${escapeHtml(item.category)}</small></td><td>${money(item.price)}</td><td>${item.available ? 'No cardápio' : 'Removido'}</td><td><button class="table-action" type="button" data-edit="${escapeHtml(item.id)}">Editar</button> <button class="table-action" type="button" data-toggle-availability="${escapeHtml(item.id)}">${item.available ? 'Remover do cardápio' : 'Reativar'}</button></td></tr>`).join('') : `<tr><td colspan="5">${menu.length ? 'Nenhum produto corresponde a esses filtros.' : 'Nenhum item cadastrado.'}</td></tr>`;
 			document.querySelector('#orders-table').innerHTML = orders.length ? orders.map((order) => {
 				const phone = String(order.telefone || '').replace(/\D/g, '');
 				const whatsappNumber = phone.length === 10 || phone.length === 11 ? `55${phone}` : phone;
@@ -156,8 +159,22 @@
 			previewUrl = '';
 		};
 		const readApiMessage = async (response) => {
-			const body = await response.json().catch(() => ({}));
-			return body.detail || body.message || body.erro || `Falha na operação (HTTP ${response.status}).`;
+			const responseText = await response.text();
+			let body = {};
+			try {
+				body = responseText ? JSON.parse(responseText) : {};
+			} catch {
+				if (response.headers.get('content-type')?.includes('text/plain')
+					&& responseText.trim() && !responseText.includes('<')) {
+					return responseText.trim().slice(0, 240);
+				}
+			}
+			const message = body.detail || body.message || body.erro;
+			if (message) return message;
+			if (response.status >= 500) {
+				return `O servidor não conseguiu concluir a operação (HTTP ${response.status}). Consulte o log do backend para ver a causa.`;
+			}
+			return `Falha na operação (HTTP ${response.status}).`;
 		};
 		const uploadProductImage = async (file) => {
 			const body = new FormData();
@@ -167,7 +184,7 @@
 				redirectToAdminLogin();
 				throw new Error('Sua sessão expirou.');
 			}
-			if (!response.ok) throw new Error(await readApiMessage(response));
+			if (!response.ok) throw new Error(`Falha ao enviar a imagem: ${await readApiMessage(response)}`);
 			return (await response.json()).url;
 		};
 		const saveProduct = async (event) => {
@@ -185,6 +202,12 @@
 			button.disabled = true;
 			try {
 				const selectedFile = imageInput.files[0];
+				if (selectedFile && !['image/png', 'image/jpeg'].includes(selectedFile.type)) {
+					throw new Error('Selecione uma imagem PNG ou JPEG.');
+				}
+				if (selectedFile && selectedFile.size > 5 * 1024 * 1024) {
+					throw new Error('A imagem deve ter no máximo 5 MB.');
+				}
 				const image = selectedFile ? await uploadProductImage(selectedFile) : current?.image
 					|| (productType === 'bebida' ? 'photo-1622483767028-3f66f32aef97' : 'photo-1571407970349-bc81e7e96d47');
 				const payload = {
@@ -207,7 +230,9 @@
 					return;
 				}
 				if (response.status === 403) throw new Error('Sua sessão não está autorizada como administradora.');
-				if (!response.ok) throw new Error(await readApiMessage(response));
+				if (!response.ok) {
+					throw new Error(`Falha ao ${apiId ? 'atualizar' : 'cadastrar'} produto: ${await readApiMessage(response)}`);
+				}
 				resetProductForm();
 				setProductFeedback(apiId ? 'Produto atualizado.' : 'Produto cadastrado.');
 				await refreshDashboard();
@@ -253,7 +278,7 @@
 			if (availabilityButton) {
 				const item = apiProducts.find((entry) => entry.id === availabilityButton.dataset.toggleAvailability);
 				if (!item) return;
-				if (item.available && !window.confirm(`Desativar ${item.name}? Ele deixará de aparecer no cardápio e o histórico de pedidos será preservado.`)) return;
+				if (item.available && !window.confirm(`Remover ${item.name} do cardápio? O registro e o histórico dos pedidos serão preservados; você poderá reativá-lo depois.`)) return;
 				const [type, id] = item.id.split(':');
 				const endpoint = `/api/admin/${type === 'bebida' ? 'bebidas' : 'pizzas'}/${encodeURIComponent(id)}`;
 				const payload = {
@@ -261,29 +286,35 @@
 					preco: item.price, imagem: item.image, disponivel: true
 				};
 				if (type === 'pizza') payload.categoria = item.category;
-				const request = item.available
-					? apiFetch(endpoint, { method: 'DELETE' })
-					: apiFetch(endpoint, {
-						method: 'PUT',
-						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify(payload)
-					});
-				request
-					.then(async (response) => {
+				availabilityButton.disabled = true;
+				(async () => {
+					try {
+						const response = item.available
+							? await apiFetch(endpoint, { method: 'DELETE' })
+							: await apiFetch(endpoint, {
+								method: 'PUT',
+								headers: { 'Content-Type': 'application/json' },
+								body: JSON.stringify(payload)
+							});
 						if (response.status === 401) {
 							redirectToAdminLogin();
 							return;
 						}
 						if (response.status === 403) throw new Error('Sua sessão não está autorizada como administradora.');
 						if (!response.ok) throw new Error(await readApiMessage(response));
-						setProductFeedback(item.available ? 'Produto desativado.' : 'Produto reativado.');
+						setProductFeedback(item.available ? 'Produto removido do cardápio; histórico preservado.' : 'Produto reativado no cardápio.');
 						await refreshDashboard();
-					})
-					.catch((error) => setProductFeedback(error instanceof Error ? error.message : 'Não foi possível desativar o produto.', true));
+					} catch (error) {
+						setProductFeedback(error instanceof Error ? error.message : 'Não foi possível alterar o cardápio.', true);
+					} finally {
+						availabilityButton.disabled = false;
+					}
+				})();
 			}
 		});
 		document.querySelector('#product-search').addEventListener('input', renderDashboard);
 		document.querySelector('#product-filter-category').addEventListener('change', renderDashboard);
+		document.querySelector('#product-filter-availability').addEventListener('change', renderDashboard);
 		document.querySelector('#orders-table').addEventListener('change', (event) => {
 			const select = event.target.closest('[data-status]');
 			if (!select) return;
