@@ -2,8 +2,11 @@ package com.pizzaburguer.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pizzaburguer.model.Pedido;
+import com.pizzaburguer.model.Pizza;
 import com.pizzaburguer.model.Usuario;
+import com.pizzaburguer.repository.BebidaRepository;
 import com.pizzaburguer.repository.PedidoRepository;
+import com.pizzaburguer.repository.PizzaRepository;
 import com.pizzaburguer.repository.UsuarioRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,13 +27,14 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PedidoControllerTest {
     @Mock private PedidoRepository pedidoRepository;
     @Mock private UsuarioRepository usuarioRepository;
+    @Mock private PizzaRepository pizzaRepository;
+    @Mock private BebidaRepository bebidaRepository;
 
     private PedidoController controller;
     private Usuario customer;
@@ -38,7 +42,8 @@ class PedidoControllerTest {
 
     @BeforeEach
     void setUp() {
-        controller = new PedidoController(pedidoRepository, usuarioRepository, new ObjectMapper());
+        controller = new PedidoController(
+                pedidoRepository, usuarioRepository, pizzaRepository, bebidaRepository, new ObjectMapper());
         customer = new Usuario();
         customer.setId(14L);
         customer.setNome("Cliente");
@@ -51,6 +56,42 @@ class PedidoControllerTest {
     }
 
     @Test
+    void rejectsOrdersContainingUnavailableDatabaseProducts() {
+        Pizza unavailable = new Pizza();
+        unavailable.setId(7L);
+        unavailable.setDisponivel(false);
+        when(pizzaRepository.findById(7L)).thenReturn(Optional.of(unavailable));
+        List<Map<String, Object>> items = List.of(Map.of(
+                "id", "pizza-7", "name", "Pizza desativada", "price", 42.9, "quantity", 1));
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
+                controller.criarPedido(new PedidoController.CriarPedidoRequest(
+                        customer.getTelefone(), "Rua 1, 123", "", "Pix", "Entrega",
+                        new BigDecimal("47.90"), items), customerAuth));
+
+        assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+        verify(pedidoRepository, never()).save(any(Pedido.class));
+    }
+
+    @Test
+    void rejectsStaleLegacyCartItemsThatAreNoLongerAvailable() {
+        Pizza unavailable = new Pizza();
+        unavailable.setNome("Calabresa");
+        unavailable.setDisponivel(false);
+        when(pizzaRepository.findFirstByNome("Calabresa")).thenReturn(Optional.of(unavailable));
+        List<Map<String, Object>> items = List.of(Map.of(
+                "id", "calabresa", "name", "Calabresa", "price", 42.9, "quantity", 1));
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
+                controller.criarPedido(new PedidoController.CriarPedidoRequest(
+                        customer.getTelefone(), "Rua 1, 123", "", "Pix", "Entrega",
+                        new BigDecimal("47.90"), items), customerAuth));
+
+        assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+        verify(pedidoRepository, never()).save(any(Pedido.class));
+    }
+
+    @Test
     void savesOrderAndReturnsItsItemsAndCurrentStatus() {
         when(pedidoRepository.save(any(Pedido.class))).thenAnswer(invocation -> {
             Pedido pedido = invocation.getArgument(0);
@@ -59,6 +100,10 @@ class PedidoControllerTest {
         });
         List<Map<String, Object>> items = List.of(Map.of(
                 "id", "calabresa", "name", "Calabresa", "price", 42.9, "quantity", 2));
+        Pizza available = new Pizza();
+        available.setNome("Calabresa");
+        available.setDisponivel(true);
+        when(pizzaRepository.findFirstByNome("Calabresa")).thenReturn(Optional.of(available));
 
         Map<String, Object> result = controller.criarPedido(
                 new PedidoController.CriarPedidoRequest(

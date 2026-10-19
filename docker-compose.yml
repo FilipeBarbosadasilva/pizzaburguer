@@ -7,7 +7,7 @@ services:
       MYSQL_DATABASE: pizzaburguer_db
       MYSQL_ROOT_PASSWORD: pizzaburguer_dev
     ports:
-      - "3307:3306"
+      - "3307:3307"
     volumes:
       - pizzaburguer-db:/var/lib/mysql
     healthcheck:
@@ -32,6 +32,9 @@ services:
       SPRING_MAIL_PORT: 1025
       SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: "false"
       SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "false"
+      APP_UPLOAD_DIR: /app/uploads
+    volumes:
+      - pizzaburguer-uploads:/app/uploads
     depends_on:
       mysql:
         condition: service_healthy
@@ -43,7 +46,7 @@ services:
     container_name: pizzaburguer-frontend
     restart: unless-stopped
     ports:
-      - "81:80"
+      - "80:81"
     volumes:
       - ./:/usr/share/nginx/html:ro
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
@@ -60,3 +63,4 @@ services:
 
 volumes:
   pizzaburguer-db:
+  pizzaburguer-uploads:

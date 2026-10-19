@@ -1,4 +1,5 @@
 D:\Pizzaburguer\backend\src\main\java\com\pizzaburguer\config\SecurityConfig.java
+D:\Pizzaburguer\backend\src\main\java\com\pizzaburguer\config\UploadedImagesConfig.java
 D:\Pizzaburguer\backend\src\main\java\com\pizzaburguer\controller\AuthController.java
 D:\Pizzaburguer\backend\src\main\java\com\pizzaburguer\controller\CardapioController.java
 D:\Pizzaburguer\backend\src\main\java\com\pizzaburguer\controller\PedidoController.java
@@ -16,4 +17,5 @@ D:\Pizzaburguer\backend\src\main\java\com\pizzaburguer\repository\UsuarioReposit
 D:\Pizzaburguer\backend\src\main\java\com\pizzaburguer\service\CardapioService.java
 D:\Pizzaburguer\backend\src\main\java\com\pizzaburguer\service\RecuperacaoSenhaRateLimiter.java
 D:\Pizzaburguer\backend\src\main\java\com\pizzaburguer\service\RecuperacaoSenhaService.java
+D:\Pizzaburguer\backend\src\main\java\com\pizzaburguer\service\UploadStorageService.java
 D:\Pizzaburguer\backend\src\main\java\com\pizzaburguer\service\UsuarioService.java

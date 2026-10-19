@@ -221,6 +221,7 @@
 				<nav class="menu-shortcuts" aria-label="Categorias do cardápio"><a
 						href="#tradicionais">Tradicionais</a><a href="#especiais">Especiais</a><a
 						href="#doces">Doces</a><a href="#bebidas">Bebidas</a></nav>
+				<p class="form-feedback hidden" id="menu-feedback" role="alert"></p>
 				<section class="menu-category" id="tradicionais">
 					<div class="category-heading">
 						<h2>Tradicionais</h2><span>Os sabores que sempre voltam</span>
@@ -254,7 +255,7 @@
 					href="index.html">Início</a></div><small>© 2026 Pizzaburguer. Todos os direitos reservados.</small>
 		</footer>
 		<script>
-			const products = [
+			const fallbackProducts = [
 				{ id: 'calabresa', category: 'tradicionais', name: 'Calabresa da casa', description: 'Calabresa artesanal, cebola roxa e orégano fresco.', price: 42.9, image: 'photo-1571407970349-bc81e7e96d47' },
 				{ id: 'mussarela', category: 'tradicionais', name: 'Muçarela', description: 'Muçarela derretida, molho da casa e manjericão.', price: 39.9, image: 'photo-1574071318508-1cdbab80d002' },
 				{ id: 'portuguesa', category: 'tradicionais', name: 'Portuguesa', description: 'Presunto, ovo, cebola, azeitona e muçarela.', price: 45.9, image: 'photo-1579751626657-72bc17010498' },
@@ -268,22 +269,52 @@
 				{ id: 'agua', category: 'bebidas', name: 'Água mineral 500 ml', description: 'Com ou sem gás, sempre gelada.', price: 5.9, image: 'photo-1616118132534-381148898bb4' },
 				{ id: 'cerveja', category: 'bebidas', name: 'Cerveja long neck', description: 'Cerveja lager 330 ml. Venda proibida para menores.', price: 12.9, image: 'photo-1608270586620-248524c67de9' }
 			];
+			const fallbackDescriptions = new Map(fallbackProducts.map((product) => [product.name, product.description]));
 			const formatPrice = (value) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-			const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
-			const customProducts = JSON.parse(localStorage.getItem('pizzaburguer-menu') || '[]');
 			const overrides = JSON.parse(localStorage.getItem('pizzaburguer-menu-overrides') || '{}');
 			const removed = JSON.parse(localStorage.getItem('pizzaburguer-menu-removed') || '[]');
-			const fullMenu = [...products.filter((product) => !removed.includes(product.id)).map((product) => ({ ...product, ...overrides[product.id] })), ...customProducts];
-			document.querySelectorAll('[data-menu-category]').forEach((grid) => {
-				const category = grid.dataset.menuCategory;
-				fullMenu.filter((product) => product.category === category).forEach((product) => {
+			let fullMenu = fallbackProducts.filter((product) => !removed.includes(product.id))
+				.map((product) => ({ ...product, ...overrides[product.id] }));
+			const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+			const imageUrl = (image) => image.startsWith('/') || image.startsWith('http')
+				? image
+				: `https://images.unsplash.com/${image}?auto=format&fit=crop&w=800&q=82`;
+			const renderMenu = () => {
+				document.querySelectorAll('[data-menu-category]').forEach((grid) => {
+					const category = grid.dataset.menuCategory;
+					grid.replaceChildren();
+					fullMenu.filter((product) => product.category === category && product.available !== false).forEach((product) => {
 					const card = document.createElement('article');
 					card.className = 'menu-card';
-					const imageUrl = product.image.startsWith('http') ? product.image : `https://images.unsplash.com/${product.image}?auto=format&fit=crop&w=800&q=82`;
-					card.innerHTML = `<img class="menu-card-image ${category === 'bebidas' ? 'menu-drink-image' : ''}" src="${escapeHtml(imageUrl)}" alt="${escapeHtml(product.name)}" loading="lazy"><div class="menu-card-body"><div class="menu-card-top"><h3>${escapeHtml(product.name)}</h3><span class="menu-card-price">${formatPrice(Number(product.price))}</span></div><p>${escapeHtml(product.description)}</p><button class="button button-red" type="button" data-add="${escapeHtml(product.id)}">Adicionar ao pedido <span aria-hidden="true">+</span></button></div>`;
+					card.innerHTML = `<img class="menu-card-image ${category === 'bebidas' ? 'menu-drink-image' : ''}" src="${escapeHtml(imageUrl(product.image))}" alt="${escapeHtml(product.name)}" loading="lazy"><div class="menu-card-body"><div class="menu-card-top"><h3>${escapeHtml(product.name)}</h3><span class="menu-card-price">${formatPrice(Number(product.price))}</span></div><p>${escapeHtml(product.description || '')}</p><button class="button button-red" type="button" data-add="${escapeHtml(product.id)}">Adicionar ao pedido <span aria-hidden="true">+</span></button></div>`;
 					grid.append(card);
 				});
-			});
+				});
+			};
+			renderMenu();
+			Promise.all([fetch('/api/pizzas'), fetch('/api/bebidas')])
+				.then(async ([pizzasResponse, drinksResponse]) => {
+					if (!pizzasResponse.ok || !drinksResponse.ok) throw new Error('O servidor não conseguiu carregar o cardápio.');
+					const [pizzas, drinks] = await Promise.all([pizzasResponse.json(), drinksResponse.json()]);
+					fullMenu = [
+						...pizzas.map((pizza) => ({
+							id: `pizza-${pizza.id}`, productType: 'pizza', category: pizza.categoria,
+							name: pizza.nome, description: pizza.descricao || fallbackDescriptions.get(pizza.nome) || '', price: pizza.preco,
+							image: pizza.imagem, available: pizza.disponivel
+						})),
+						...drinks.map((drink) => ({
+							id: `bebida-${drink.id}`, productType: 'bebida', category: 'bebidas',
+							name: drink.nome, description: drink.descricao || fallbackDescriptions.get(drink.nome) || '', price: drink.preco,
+							image: drink.imagem, available: drink.disponivel
+						}))
+					];
+					renderMenu();
+				})
+				.catch((error) => {
+					const feedback = document.querySelector('#menu-feedback');
+					feedback.textContent = `${error instanceof Error ? error.message : 'Falha ao carregar o cardápio.'} Exibindo o cardápio disponível neste navegador.`;
+					feedback.classList.remove('hidden');
+				});
 			document.addEventListener('click', (event) => {
 				const button = event.target.closest('[data-add]');
 				if (!button) return;

@@ -1,4 +1,6 @@
 com\pizzaburguer\service\UsuarioServiceTest.class
+com\pizzaburguer\service\UploadStorageServiceTest.class
+com\pizzaburguer\service\CardapioServiceTest.class
 com\pizzaburguer\service\RecuperacaoSenhaServiceTest.class
 com\pizzaburguer\controller\AuthControllerTest.class
 com\pizzaburguer\controller\PedidoControllerTest.class

@@ -1,20 +1,6 @@
 
 
 
-const defaults = [
-			{ id: 'calabresa', name: 'Calabresa da casa', description: 'Calabresa artesanal, cebola roxa e orégano fresco.', price: 42.9, category: 'tradicionais', image: 'photo-1571407970349-bc81e7e96d47' },
-			{ id: 'mussarela', name: 'Muçarela', description: 'Muçarela derretida, molho da casa e manjericão.', price: 39.9, category: 'tradicionais', image: 'photo-1574071318508-1cdbab80d002' },
-			{ id: 'portuguesa', name: 'Portuguesa', description: 'Presunto, ovo, cebola, azeitona e muçarela.', price: 45.9, category: 'tradicionais', image: 'photo-1579751626657-72bc17010498' },
-			{ id: 'frango-catupiry', name: 'Frango com Catupiry', description: 'Frango temperado, Catupiry cremoso e milho.', price: 48.9, category: 'especiais', image: 'photo-1593560708920-61dd98c46a4e' },
-			{ id: 'quatro-queijos', name: 'Quatro queijos', description: 'Muçarela, gorgonzola, parmesão e Catupiry.', price: 49.9, category: 'especiais', image: 'photo-1513104890138-7c749659a591' },
-			{ id: 'vegetariana', name: 'Da horta', description: 'Abobrinha, tomate, cogumelos e rúcula fresca.', price: 46.9, category: 'especiais', image: 'photo-1571407970349-bc81e7e96d47' },
-			{ id: 'chocolate', name: 'Chocolate', description: 'Chocolate cremoso e raspas de chocolate ao leite.', price: 36.9, category: 'doces', image: 'photo-1579751626657-72bc17010498' },
-			{ id: 'banana-canela', name: 'Banana com canela', description: 'Banana, açúcar, canela e um toque de doce de leite.', price: 34.9, category: 'doces', image: 'photo-1513104890138-7c749659a591' },
-			{ id: 'refrigerante', name: 'Refrigerante 2 L', description: 'Escolha entre cola, guaraná ou laranja.', price: 13.9, category: 'bebidas', image: 'photo-1622483767028-3f66f32aef97' },
-			{ id: 'suco', name: 'Suco natural 500 ml', description: 'Laranja ou limonada, feito na hora.', price: 10.9, category: 'bebidas', image: 'photo-1600271886742-f049cd451bba' },
-			{ id: 'agua', name: 'Água mineral 500 ml', description: 'Com ou sem gás, sempre gelada.', price: 5.9, category: 'bebidas', image: 'photo-1616118132534-381148898bb4' },
-			{ id: 'cerveja', name: 'Cerveja long neck', description: 'Cerveja lager 330 ml.', price: 12.9, category: 'bebidas', image: 'photo-1608270586620-248524c67de9' }
-		];
 		const money = (value) => Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 		const read = (key, fallback = []) => JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
 		const store = (key, value) => localStorage.setItem(key, JSON.stringify(value));
@@ -28,13 +14,19 @@ const defaults = [
 		})[character]);
 		let apiOrders = [];
 		let registeredCustomers = [];
+		let apiProducts = [];
 		let refreshingDashboard = false;
 		const removedOrdersKey = 'pizzaburguer-admin-removed-orders';
-		const currentMenu = () => {
-			const removed = read('pizzaburguer-menu-removed');
-			const overrides = read('pizzaburguer-menu-overrides', {});
-			return [...defaults.filter((item) => !removed.includes(item.id)).map((item) => ({ ...item, ...overrides[item.id] })), ...read('pizzaburguer-menu')];
-		};
+		const currentMenu = () => apiProducts;
+		const fallbackDescriptions = new Map([
+			['Refrigerante 2 L', 'Escolha entre cola, guaraná ou laranja.'],
+			['Suco natural 500 ml', 'Laranja ou limonada, feito na hora.'],
+			['Água mineral 500 ml', 'Com ou sem gás, sempre gelada.'],
+			['Cerveja long neck', 'Cerveja lager 330 ml. Venda proibida para menores.']
+		]);
+		const productImageUrl = (image) => image?.startsWith('/') || image?.startsWith('http')
+			? image
+			: `https://images.unsplash.com/${image || 'photo-1571407970349-bc81e7e96d47'}?auto=format&fit=crop&w=120&q=75`;
 		const getPopularItems = (orders) => {
 			const quantities = new Map();
 			orders.filter((order) => order.status !== 'Cancelado').forEach((order) => {
@@ -59,7 +51,12 @@ const defaults = [
 			document.querySelector('#stat-orders').textContent = todayOrders.length;
 			document.querySelector('#stat-day').textContent = money(todayOrders.reduce((sum, order) => sum + Number(order.total), 0));
 			document.querySelector('#stat-month').textContent = money(monthOrders.reduce((sum, order) => sum + Number(order.total), 0));
-			document.querySelector('#menu-table').innerHTML = menu.length ? menu.map((item) => `<tr><td>${escapeHtml(item.name)}<br><small>${escapeHtml(item.category)}</small></td><td>${money(item.price)}</td><td><button class="table-action" type="button" data-edit="${escapeHtml(item.id)}">Editar</button> <button class="table-action" type="button" data-delete="${escapeHtml(item.id)}">Remover</button></td></tr>`).join('') : '<tr><td colspan="3">Nenhum item cadastrado.</td></tr>';
+			const searchTerm = document.querySelector('#product-search').value.trim().toLocaleLowerCase('pt-BR');
+			const categoryFilter = document.querySelector('#product-filter-category').value;
+			const visibleMenu = menu.filter((item) =>
+				(!searchTerm || item.name.toLocaleLowerCase('pt-BR').includes(searchTerm))
+				&& (!categoryFilter || item.category === categoryFilter));
+			document.querySelector('#menu-table').innerHTML = visibleMenu.length ? visibleMenu.map((item) => `<tr><td><img class="admin-product-thumb" src="${escapeHtml(productImageUrl(item.image))}" alt=""></td><td>${escapeHtml(item.name)}<br><small>${escapeHtml(item.category)}</small></td><td>${money(item.price)}</td><td>${item.available ? 'Disponível' : 'Indisponível'}</td><td><button class="table-action" type="button" data-edit="${escapeHtml(item.id)}">Editar</button> <button class="table-action" type="button" data-toggle-availability="${escapeHtml(item.id)}">${item.available ? 'Desativar' : 'Ativar'}</button></td></tr>`).join('') : `<tr><td colspan="5">${menu.length ? 'Nenhum produto corresponde à busca.' : 'Nenhum item cadastrado.'}</td></tr>`;
 			document.querySelector('#orders-table').innerHTML = orders.length ? orders.map((order) => {
 				const phone = String(order.telefone || '').replace(/\D/g, '');
 				const whatsappNumber = phone.length === 10 || phone.length === 11 ? `55${phone}` : phone;
@@ -85,24 +82,43 @@ const defaults = [
 			if (refreshingDashboard) return;
 			refreshingDashboard = true;
 			try {
-				const [ordersResponse, customersResponse] = await Promise.all([
+				const [ordersResponse, customersResponse, pizzasResponse, drinksResponse] = await Promise.all([
 					apiFetch('/api/admin/pedidos'),
-					apiFetch('/api/admin/clientes')
+					apiFetch('/api/admin/clientes'),
+					apiFetch('/api/pizzas'),
+					apiFetch('/api/bebidas')
 				]);
-				if (ordersResponse.status === 401 || customersResponse.status === 401) {
+				if ([ordersResponse, customersResponse, pizzasResponse, drinksResponse].some((response) => response.status === 401)) {
 					redirectToAdminLogin();
 					return;
 				}
-				if (ordersResponse.status === 403 || customersResponse.status === 403) {
+				if ([ordersResponse, customersResponse].some((response) => response.status === 403)) {
 					throw new Error('Sua sessão não está autorizada como administradora. Saia da conta e entre novamente com o usuário administrador.');
 				}
-				if (!ordersResponse.ok || !customersResponse.ok) {
-					throw new Error(`Não foi possível atualizar pedidos e clientes (HTTP ${ordersResponse.status}/${customersResponse.status}).`);
+				if ([ordersResponse, customersResponse, pizzasResponse, drinksResponse].some((response) => !response.ok)) {
+					throw new Error(`Não foi possível atualizar os dados administrativos (HTTP ${ordersResponse.status}/${customersResponse.status}/${pizzasResponse.status}/${drinksResponse.status}).`);
 				}
-				[apiOrders, registeredCustomers] = await Promise.all([
+				const [orders, customers, pizzas, drinks] = await Promise.all([
 					ordersResponse.json(),
-					customersResponse.json()
+					customersResponse.json(),
+					pizzasResponse.json(),
+					drinksResponse.json()
 				]);
+				apiOrders = orders;
+				registeredCustomers = customers;
+				apiProducts = [
+					...pizzas.map((pizza) => ({
+						id: `pizza:${pizza.id}`, productType: 'pizza', name: pizza.nome,
+						description: pizza.descricao, category: pizza.categoria, price: pizza.preco,
+						image: pizza.imagem, available: pizza.disponivel
+					})),
+					...drinks.map((drink) => ({
+						id: `bebida:${drink.id}`, productType: 'bebida', name: drink.nome,
+						description: drink.descricao || fallbackDescriptions.get(drink.nome) || '',
+						category: 'bebidas', price: drink.preco,
+						image: drink.imagem, available: drink.disponivel
+					}))
+				];
 				document.querySelector('#admin-data-error').classList.add('hidden');
 				renderDashboard();
 			} catch (error) {
@@ -117,46 +133,157 @@ const defaults = [
 			document.querySelector('#admin-dashboard').classList.remove('hidden');
 			refreshDashboard();
 		};
-		document.querySelector('#product-form').addEventListener('submit', (event) => {
+		const productForm = document.querySelector('#product-form');
+		const imageInput = document.querySelector('#product-image');
+		const imagePreview = document.querySelector('#product-image-preview');
+		let previewUrl = '';
+		const setProductFeedback = (message, isError = false) => {
+			const feedback = document.querySelector('#product-feedback');
+			feedback.textContent = message;
+			feedback.classList.toggle('error', isError);
+			feedback.classList.remove('hidden');
+		};
+		const resetProductForm = () => {
+			productForm.reset();
+			document.querySelector('#product-id').value = '';
+			document.querySelector('#product-form-title').textContent = 'Adicionar item ao cardápio';
+			document.querySelector('#product-submit').textContent = 'Adicionar item';
+			document.querySelector('#product-cancel-edit').classList.add('hidden');
+			imagePreview.classList.add('hidden');
+			imagePreview.removeAttribute('src');
+			document.querySelector('#product-feedback').classList.add('hidden');
+			if (previewUrl) URL.revokeObjectURL(previewUrl);
+			previewUrl = '';
+		};
+		const readApiMessage = async (response) => {
+			const body = await response.json().catch(() => ({}));
+			return body.detail || body.message || body.erro || `Falha na operação (HTTP ${response.status}).`;
+		};
+		const uploadProductImage = async (file) => {
+			const body = new FormData();
+			body.append('file', file);
+			const response = await apiFetch('/api/admin/uploads', { method: 'POST', body });
+			if (response.status === 401) {
+				redirectToAdminLogin();
+				throw new Error('Sua sessão expirou.');
+			}
+			if (!response.ok) throw new Error(await readApiMessage(response));
+			return (await response.json()).url;
+		};
+		const saveProduct = async (event) => {
 			event.preventDefault();
-			const form = new FormData(event.currentTarget);
-			const name = String(form.get('name')).trim();
-			const products = read('pizzaburguer-menu');
-			const id = `${name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-')}-${Date.now()}`;
-			products.push({ id, name, description: String(form.get('description')).trim(), price: Number(form.get('price')), category: form.get('category'), image: form.get('image') });
-			store('pizzaburguer-menu', products);
-			event.currentTarget.reset();
-			document.querySelector('#product-feedback').textContent = 'Item adicionado ao cardápio.';
-			document.querySelector('#product-feedback').classList.remove('hidden');
-			renderDashboard();
+			const button = document.querySelector('#product-submit');
+			const form = new FormData(productForm);
+			const productId = String(form.get('id') || '');
+			const current = apiProducts.find((item) => item.id === productId);
+			const category = String(form.get('category'));
+			const productType = category === 'bebidas' ? 'bebida' : 'pizza';
+			if (current && current.productType !== productType) {
+				setProductFeedback('Não é possível mudar um produto de pizza para bebida (ou o contrário). Cadastre um novo produto para essa categoria.', true);
+				return;
+			}
+			button.disabled = true;
+			try {
+				const selectedFile = imageInput.files[0];
+				const image = selectedFile ? await uploadProductImage(selectedFile) : current?.image
+					|| (productType === 'bebida' ? 'photo-1622483767028-3f66f32aef97' : 'photo-1571407970349-bc81e7e96d47');
+				const payload = {
+					nome: String(form.get('name')).trim(),
+					descricao: String(form.get('description')).trim(),
+					preco: Number(form.get('price')),
+					imagem: image,
+					disponivel: document.querySelector('#product-available').checked
+				};
+				if (productType === 'pizza') payload.categoria = category;
+				const endpoint = productType === 'bebida' ? 'bebidas' : 'pizzas';
+				const apiId = productId ? productId.split(':')[1] : '';
+				const response = await apiFetch(`/api/admin/${endpoint}${apiId ? `/${encodeURIComponent(apiId)}` : ''}`, {
+					method: apiId ? 'PUT' : 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(payload)
+				});
+				if (response.status === 401) {
+					redirectToAdminLogin();
+					return;
+				}
+				if (response.status === 403) throw new Error('Sua sessão não está autorizada como administradora.');
+				if (!response.ok) throw new Error(await readApiMessage(response));
+				resetProductForm();
+				setProductFeedback(apiId ? 'Produto atualizado.' : 'Produto cadastrado.');
+				await refreshDashboard();
+			} catch (error) {
+				setProductFeedback(error instanceof Error ? error.message : 'Não foi possível salvar o produto.', true);
+			} finally {
+				button.disabled = false;
+			}
+		};
+		productForm.addEventListener('submit', saveProduct);
+		document.querySelector('#product-cancel-edit').addEventListener('click', resetProductForm);
+		imageInput.addEventListener('change', () => {
+			if (previewUrl) URL.revokeObjectURL(previewUrl);
+			previewUrl = imageInput.files[0] ? URL.createObjectURL(imageInput.files[0]) : '';
+			if (previewUrl) {
+				imagePreview.src = previewUrl;
+				imagePreview.classList.remove('hidden');
+			} else {
+				imagePreview.classList.add('hidden');
+				imagePreview.removeAttribute('src');
+			}
 		});
 		document.querySelector('#menu-table').addEventListener('click', (event) => {
 			const editButton = event.target.closest('[data-edit]');
-			const deleteButton = event.target.closest('[data-delete]');
-			let menu = currentMenu();
+			const availabilityButton = event.target.closest('[data-toggle-availability]');
 			if (editButton) {
-				const item = menu.find((entry) => entry.id === editButton.dataset.edit);
-				const name = window.prompt('Nome do item:', item.name);
-				if (name === null || !name.trim()) return;
-				const price = window.prompt('Preço (R$):', item.price);
-				if (price === null || !Number.isFinite(Number(price)) || Number(price) <= 0) return;
-				const description = window.prompt('Descrição:', item.description);
-				if (description === null) return;
-				const updated = { ...item, name: name.trim(), price: Number(price), description: description.trim() };
-				if (defaults.some((entry) => entry.id === item.id)) {
-					const overrides = read('pizzaburguer-menu-overrides', {});
-					overrides[item.id] = updated;
-					store('pizzaburguer-menu-overrides', overrides);
-				} else store('pizzaburguer-menu', read('pizzaburguer-menu').map((entry) => entry.id === item.id ? updated : entry));
+				const item = apiProducts.find((entry) => entry.id === editButton.dataset.edit);
+				if (!item) return;
+				resetProductForm();
+				document.querySelector('#product-id').value = item.id;
+				document.querySelector('#product-name').value = item.name;
+				document.querySelector('#product-description').value = item.description || '';
+				document.querySelector('#product-price').value = item.price;
+				document.querySelector('#product-category').value = item.category;
+				document.querySelector('#product-available').checked = item.available;
+				document.querySelector('#product-form-title').textContent = 'Editar produto';
+				document.querySelector('#product-submit').textContent = 'Salvar alterações';
+				document.querySelector('#product-cancel-edit').classList.remove('hidden');
+				imagePreview.src = productImageUrl(item.image);
+				imagePreview.classList.remove('hidden');
+				document.querySelector('#product-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
 			}
-			if (deleteButton) {
-				const item = menu.find((entry) => entry.id === deleteButton.dataset.delete);
-				if (!window.confirm(`Remover ${item.name} do cardápio?`)) return;
-				if (defaults.some((entry) => entry.id === item.id)) store('pizzaburguer-menu-removed', [...read('pizzaburguer-menu-removed'), item.id]);
-				else store('pizzaburguer-menu', read('pizzaburguer-menu').filter((entry) => entry.id !== item.id));
+			if (availabilityButton) {
+				const item = apiProducts.find((entry) => entry.id === availabilityButton.dataset.toggleAvailability);
+				if (!item) return;
+				if (item.available && !window.confirm(`Desativar ${item.name}? Ele deixará de aparecer no cardápio e o histórico de pedidos será preservado.`)) return;
+				const [type, id] = item.id.split(':');
+				const endpoint = `/api/admin/${type === 'bebida' ? 'bebidas' : 'pizzas'}/${encodeURIComponent(id)}`;
+				const payload = {
+					nome: item.name, descricao: item.description || '',
+					preco: item.price, imagem: item.image, disponivel: true
+				};
+				if (type === 'pizza') payload.categoria = item.category;
+				const request = item.available
+					? apiFetch(endpoint, { method: 'DELETE' })
+					: apiFetch(endpoint, {
+						method: 'PUT',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify(payload)
+					});
+				request
+					.then(async (response) => {
+						if (response.status === 401) {
+							redirectToAdminLogin();
+							return;
+						}
+						if (response.status === 403) throw new Error('Sua sessão não está autorizada como administradora.');
+						if (!response.ok) throw new Error(await readApiMessage(response));
+						setProductFeedback(item.available ? 'Produto desativado.' : 'Produto reativado.');
+						await refreshDashboard();
+					})
+					.catch((error) => setProductFeedback(error instanceof Error ? error.message : 'Não foi possível desativar o produto.', true));
 			}
-			renderDashboard();
 		});
+		document.querySelector('#product-search').addEventListener('input', renderDashboard);
+		document.querySelector('#product-filter-category').addEventListener('change', renderDashboard);
 		document.querySelector('#orders-table').addEventListener('change', (event) => {
 			const select = event.target.closest('[data-status]');
 			if (!select) return;

@@ -4,7 +4,9 @@ import com.pizzaburguer.model.Bebida;
 import com.pizzaburguer.model.Pizza;
 import com.pizzaburguer.repository.BebidaRepository;
 import com.pizzaburguer.repository.PizzaRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -30,15 +32,44 @@ public class CardapioService {
         return pizzaRepository.save(pizza);
     }
 
+    public Pizza atualizarPizza(Long id, Pizza atualizacao) {
+        Pizza pizza = pizzaRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        pizza.setNome(atualizacao.getNome());
+        pizza.setDescricao(atualizacao.getDescricao());
+        pizza.setCategoria(atualizacao.getCategoria());
+        pizza.setPreco(atualizacao.getPreco());
+        pizza.setImagem(atualizacao.getImagem());
+        pizza.setDisponivel(atualizacao.isDisponivel());
+        return pizzaRepository.save(pizza);
+    }
+
     public Bebida salvarBebida(Bebida bebida) {
         return bebidaRepository.save(bebida);
     }
 
+    public Bebida atualizarBebida(Long id, Bebida atualizacao) {
+        Bebida bebida = bebidaRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        bebida.setNome(atualizacao.getNome());
+        bebida.setDescricao(atualizacao.getDescricao());
+        bebida.setPreco(atualizacao.getPreco());
+        bebida.setImagem(atualizacao.getImagem());
+        bebida.setDisponivel(atualizacao.isDisponivel());
+        return bebidaRepository.save(bebida);
+    }
+
     public void removerPizza(Long id) {
-        pizzaRepository.deleteById(id);
+        Pizza pizza = pizzaRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        pizza.setDisponivel(false);
+        pizzaRepository.save(pizza);
     }
 
     public void removerBebida(Long id) {
-        bebidaRepository.deleteById(id);
+        Bebida bebida = bebidaRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        bebida.setDisponivel(false);
+        bebidaRepository.save(bebida);
     }
 }

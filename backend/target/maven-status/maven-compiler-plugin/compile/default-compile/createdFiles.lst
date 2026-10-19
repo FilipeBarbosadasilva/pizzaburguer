@@ -11,11 +11,13 @@ com\pizzaburguer\model\Bebida.class
 com\pizzaburguer\model\Pedido.class
 com\pizzaburguer\controller\PedidoController$1.class
 com\pizzaburguer\service\CardapioService.class
+com\pizzaburguer\config\UploadedImagesConfig.class
 com\pizzaburguer\repository\TokenRecuperacaoRepository.class
 com\pizzaburguer\model\Pizza.class
 com\pizzaburguer\service\RecuperacaoSenhaService.class
 com\pizzaburguer\PizzaburguerBackendApplication.class
 com\pizzaburguer\service\RecuperacaoSenhaRateLimiter.class
+com\pizzaburguer\service\UploadStorageService.class
 com\pizzaburguer\config\SecurityConfig.class
 com\pizzaburguer\controller\AuthController$CadastroRequest.class
 com\pizzaburguer\service\UsuarioService.class

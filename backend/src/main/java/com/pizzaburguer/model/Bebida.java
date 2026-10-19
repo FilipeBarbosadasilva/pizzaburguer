@@ -3,6 +3,7 @@ package com.pizzaburguer.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.DecimalMin;
 
 @Entity
 @Table(name = "bebidas")
@@ -15,7 +16,12 @@ public class Bebida {
     @Column(nullable = false)
     private String nome;
 
+    @NotBlank
+    @Column
+    private String descricao = "";
+
     @NotNull
+    @DecimalMin("0.01")
     @Column(nullable = false)
     private Double preco;
 
@@ -30,6 +36,9 @@ public class Bebida {
 
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
+
+    public String getDescricao() { return descricao == null ? "" : descricao; }
+    public void setDescricao(String descricao) { this.descricao = descricao; }
 
     public Double getPreco() { return preco; }
     public void setPreco(Double preco) { this.preco = preco; }

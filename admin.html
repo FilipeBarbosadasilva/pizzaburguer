@@ -10,7 +10,7 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link
 		href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&display=swap"
-		rel="stylesheet">
+		rel="stylesheet" media="print" onload="this.media='all'">
 	<link rel="stylesheet" href="css/style.css">
 	<link rel="icon" type="image/svg+xml" href="img/favicon.svg">
 	<script src="javascript/sessao.js" defer></script>
@@ -227,44 +227,59 @@
 
 				<div class="admin-grid">
 					<section class="admin-panel">
-						<h2>Adicionar item ao cardápio</h2>
+						<h2 id="product-form-title">Adicionar item ao cardápio</h2>
 						<form id="product-form">
+							<input id="product-id" name="id" type="hidden">
 							<div class="form-field"><label class="field-label" for="product-name">Nome</label><input
 									class="text-field" id="product-name" name="name" required></div>
 							<div class="form-field"><label class="field-label"
-									for="product-description">Descrição</label><input class="text-field"
-									id="product-description" name="description" required></div>
+									for="product-description">Descrição</label><textarea class="text-field"
+									id="product-description" name="description" required></textarea></div>
 							<div class="form-field"><label class="field-label" for="product-price">Preço
 									(R$)</label><input class="text-field" id="product-price" name="price" type="number"
 									min="0.01" step="0.01" required></div>
 							<div class="form-field"><label class="field-label"
 									for="product-category">Categoria</label><select class="select-field"
-									id="product-category" name="category">
+									id="product-category" name="category" required>
 									<option value="tradicionais">Tradicionais</option>
 									<option value="especiais">Especiais</option>
 									<option value="doces">Doces</option>
 									<option value="bebidas">Bebidas</option>
 								</select></div>
-							<div class="form-field"><label class="field-label" for="product-image">Imagem</label><select
-									class="select-field" id="product-image" name="image">
-									<option value="photo-1571407970349-bc81e7e96d47">Pizza artesanal</option>
-									<option value="photo-1593560708920-61dd98c46a4e">Pizza especial</option>
-									<option value="photo-1513104890138-7c749659a591">Pizza doce</option>
-									<option value="photo-1622483767028-3f66f32aef97">Bebida</option>
-								</select></div>
-							<button class="button button-red" type="submit">Adicionar item</button>
+							<div class="form-field"><label class="field-label" for="product-image">Imagem do produto
+									(PNG ou JPEG, até 5 MB)</label><input class="text-field" id="product-image"
+									name="image" type="file" accept="image/png,image/jpeg"></div>
+							<img class="admin-product-preview hidden" id="product-image-preview" alt="Pré-visualização da imagem do produto">
+							<label class="admin-availability"><input id="product-available" name="available"
+									type="checkbox" checked> Disponível para novos pedidos</label>
+							<button class="button button-red" id="product-submit" type="submit">Adicionar item</button>
+							<button class="button button-dark hidden" id="product-cancel-edit" type="button">Cancelar edição</button>
 							<p class="form-feedback hidden" id="product-feedback" role="status"></p>
 						</form>
 					</section>
 
 					<section class="admin-panel">
 						<h2>Cardápio cadastrado</h2>
+						<div class="admin-product-filters">
+							<label class="sr-only" for="product-search">Buscar produto</label>
+							<input class="text-field" id="product-search" type="search" placeholder="Buscar produto">
+							<label class="sr-only" for="product-filter-category">Filtrar por categoria</label>
+							<select class="select-field" id="product-filter-category">
+								<option value="">Todas as categorias</option>
+								<option value="tradicionais">Tradicionais</option>
+								<option value="especiais">Especiais</option>
+								<option value="doces">Doces</option>
+								<option value="bebidas">Bebidas</option>
+							</select>
+						</div>
 						<div class="admin-table-wrap">
 							<table class="admin-table admin-table-menu">
 								<thead>
 									<tr>
+										<th>Foto</th>
 										<th>Item</th>
 										<th>Preço</th>
+										<th>Disponibilidade</th>
 										<th>Ações</th>
 									</tr>
 								</thead>
@@ -330,7 +345,7 @@
 		</main>
 	</div>
 	<script>
-		window.addEventListener('load', () => {
+		window.addEventListener('DOMContentLoaded', () => {
 			const loader = document.getElementById('app-loader');
 			setTimeout(() => {
 				document.body.classList.add('is-ready');

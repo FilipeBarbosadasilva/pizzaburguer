@@ -5,6 +5,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pizzaburguer.model.Pedido;
 import com.pizzaburguer.model.Usuario;
+import com.pizzaburguer.model.Pizza;
+import com.pizzaburguer.model.Bebida;
+import com.pizzaburguer.repository.PizzaRepository;
+import com.pizzaburguer.repository.BebidaRepository;
 import com.pizzaburguer.repository.PedidoRepository;
 import com.pizzaburguer.repository.UsuarioRepository;
 import jakarta.validation.Valid;
@@ -36,14 +40,20 @@ public class PedidoController {
 
     private final PedidoRepository pedidoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final PizzaRepository pizzaRepository;
+    private final BebidaRepository bebidaRepository;
     private final ObjectMapper objectMapper;
 
     public PedidoController(
             PedidoRepository pedidoRepository,
             UsuarioRepository usuarioRepository,
+            PizzaRepository pizzaRepository,
+            BebidaRepository bebidaRepository,
             ObjectMapper objectMapper) {
         this.pedidoRepository = pedidoRepository;
         this.usuarioRepository = usuarioRepository;
+        this.pizzaRepository = pizzaRepository;
+        this.bebidaRepository = bebidaRepository;
         this.objectMapper = objectMapper;
     }
 
@@ -52,6 +62,7 @@ public class PedidoController {
             @Valid @RequestBody CriarPedidoRequest request,
             Authentication authentication) {
         Usuario usuario = buscarUsuarioAutenticado(authentication);
+        validarDisponibilidadeDosItens(request.itens());
 
         Pedido pedido = new Pedido();
         pedido.setUsuario(usuario);
@@ -252,6 +263,60 @@ public class PedidoController {
             return objectMapper.writeValueAsString(items);
         } catch (JsonProcessingException exception) {
             throw new IllegalArgumentException("Os itens do pedido não puderam ser processados.", exception);
+        }
+    }
+
+    private void validarDisponibilidadeDosItens(List<Map<String, Object>> items) {
+        for (Map<String, Object> item : items) {
+            String id = String.valueOf(item.getOrDefault("id", ""));
+            String name = String.valueOf(item.getOrDefault("name", ""));
+            if (id.startsWith("pizza-")) {
+                Pizza pizza = buscarPizza(id.substring("pizza-".length()));
+                if (!pizza.isDisponivel()) {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "Um produto do pedido está indisponível.");
+                }
+            } else if (id.startsWith("bebida-")) {
+                Bebida bebida = buscarBebida(id.substring("bebida-".length()));
+                if (!bebida.isDisponivel()) {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "Um produto do pedido está indisponível.");
+                }
+            } else {
+                String productType = String.valueOf(item.getOrDefault("productType", ""));
+                boolean drink = productType.equals("bebida") || productType.isEmpty()
+                        && String.valueOf(item.getOrDefault("category", "")).equals("bebidas");
+                boolean availableProductExists = drink
+                        ? bebidaRepository.findFirstByNome(name).filter(Bebida::isDisponivel).isPresent()
+                        : pizzaRepository.findFirstByNome(name).filter(Pizza::isDisponivel).isPresent();
+                if (!availableProductExists) {
+                    boolean productExists = drink
+                            ? bebidaRepository.findFirstByNome(name).isPresent()
+                            : pizzaRepository.findFirstByNome(name).isPresent();
+                    if (productExists) {
+                        throw new ResponseStatusException(
+                                HttpStatus.CONFLICT, "Um produto do pedido está indisponível.");
+                    }
+                    throw new ResponseStatusException(
+                            HttpStatus.BAD_REQUEST, "Um produto do pedido não existe mais no cardápio.");
+                }
+            }
+        }
+    }
+
+    private Pizza buscarPizza(String rawId) {
+        try {
+            return pizzaRepository.findById(Long.parseLong(rawId))
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Produto inválido."));
+        } catch (NumberFormatException exception) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Produto inválido.", exception);
+        }
+    }
+
+    private Bebida buscarBebida(String rawId) {
+        try {
+            return bebidaRepository.findById(Long.parseLong(rawId))
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Produto inválido."));
+        } catch (NumberFormatException exception) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Produto inválido.", exception);
         }
     }
 
